@@ -45,7 +45,7 @@ document.getElementById("snap").addEventListener("click", function() {
     form.save(null, {
       success: function(form) {
         // Execute any logic that should take place after the object is saved.
-        alert('New object created with objectId: ' + form.id);
+        alert('Submitted!');
       },
       error: function(form, error) {
         // Execute any logic that should take place if the save fails.
