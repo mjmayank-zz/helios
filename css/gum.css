@@ -1,6 +1,12 @@
     video{
-      padding: 10px;
       max-width: 100%;
+      background-color: gray;
+    }
+
+    canvas{
+      border: solid gray 1px;
+      background-image: url('../images/prof_pic.jpg');
+      background-size: cover;
     }
 
     video,

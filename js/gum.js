@@ -29,9 +29,16 @@ function gumInit() {
   }
 }
 
+function takePicture(){
+    context.drawImage(video, 0, 0, 640, 480);
+    convertCanvasToImage(canvas);
+}
+
 document.getElementById("snap").addEventListener("click", function() {
-  context.drawImage(video, 0, 0, 640, 480);
-  convertCanvasToImage(canvas);
+    takePicture();
+});
+
+document.getElementById("submit").addEventListener("click", function() {
 
   var formdata = document.getElementById("info");
 
@@ -60,7 +67,6 @@ document.getElementById("snap").addEventListener("click", function() {
 function convertCanvasToImage(canvas) {
   var image = new Image();
   image.src = canvas.toDataURL("image/png");
-  console.log(image.src);
   return image.src;
 }
 
