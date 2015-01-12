@@ -1,20 +1,34 @@
-    video{
-      max-width: 100%;
-      background-color: gray;
-    }
+video{
+  max-width: 100%;
+  background-color: gray;
+}
 
-    canvas{
-      border: solid gray 1px;
-      background-image: url('../images/prof_pic.jpg');
-      background-size: cover;
-    }
+canvas{
+  border: solid gray 1px;
+  background-image: url('../images/prof_pic.jpg');
+  background-size: cover;
+}
 
-    video,
-    .supported audio { 
-      /* I'm using CSS3 to translate the video on the X axis to give it a mirror effect */
-      -webkit-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
-      -o-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
-      -moz-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
-      -ms-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
-      transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
-    }
+video,
+.supported audio { 
+  /* I'm using CSS3 to translate the video on the X axis to give it a mirror effect */
+  -webkit-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
+  -o-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
+  -moz-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
+  -ms-transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
+  transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
+}
+
+.rush_card:nth-child(even){
+  padding: 10px 0px!important;
+}
+
+.rush-card:nth-child(odd){
+  padding: 10px 0px!important;
+  background-color: #e1e1e1;
+}
+
+.rush-card img{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

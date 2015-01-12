@@ -48,6 +48,7 @@ document.getElementById("submit").addEventListener("click", function() {
   file.save().then(function() {
     form.set("name", formdata.elements[0].value);
     form.set("email", formdata.elements[1].value);
+    form.set("hometown", formdata.elements[2].value);
     form.set("pic", file);
     form.save(null, {
       success: function(form) {
