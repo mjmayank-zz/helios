@@ -339,7 +339,8 @@ $(function() {
     routes: {
       "view": "view",
       "form": "form",
-      "signup": "signup"
+      "signup": "signup",
+      "*path": "view"
     },
 
     initialize: function(options) {
