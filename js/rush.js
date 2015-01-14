@@ -226,6 +226,7 @@ $(function() {
   var RushView = Parse.View.extend({
     events: {
       "submit form.login-form": "logIn",
+      "click #download-csv":"downloadCSV"
     },
 
     el: ".content",
@@ -239,8 +240,11 @@ $(function() {
       //             name: "Burke Deutsch"}
 
       var variables = {
-        array: []
+        "array": []
       }
+
+      this.variables = variables;
+
       this.render(variables);
       var form = Parse.Object.extend("Form");
       var query = new Parse.Query(form);
@@ -256,6 +260,7 @@ $(function() {
             dict["hometown"] = array[obj].get("hometown");
             variables["array"].push(dict);
           }
+          this.variables = variables;
           console.log("variables", variables);
           temp.render(variables);
         },
@@ -265,6 +270,34 @@ $(function() {
           console.log("error");
         }
       });
+    },
+
+    downloadCSV: function(){
+      var data = [];
+      for (var val in this.variables){
+        for (var rushee in this.variables[val]){
+          var sing_val = []
+          for (var key in this.variables[val][rushee]){
+            sing_val.push(this.variables[val][rushee][key]);
+          }
+          console.log(sing_val);
+          data.push(sing_val);
+        }
+      }
+
+      console.log(data);
+
+      // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
+      var csvContent = "data:text/csv;charset=utf-8,";
+      data.forEach(function(infoArray, index){
+
+         dataString = infoArray.join(",");
+         csvContent += dataString + "\n";
+
+      }); 
+
+      var encodedUri = encodeURI(csvContent);
+      window.open(encodedUri);
     },
 
     logIn: function(e) {
