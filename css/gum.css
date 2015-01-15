@@ -1,3 +1,15 @@
+body{
+  /*margin-top: 60px;*/
+}
+
+body, h1, h6{
+  font-family: 'Lato', 'san-serif';
+}
+
+h1{
+  font-weight: 600;
+}
+
 video{
   max-width: 100%;
   background-color: gray;
@@ -7,6 +19,11 @@ canvas{
   border: solid gray 1px;
   background-image: url('../images/prof_pic.jpg');
   background-size: cover;
+}
+
+.button{
+  font-family: 'Lato';
+  font-weight: 900;
 }
 
 video,
@@ -31,4 +48,26 @@ video,
 .rush-card img{
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+header{
+  font-size: 40px;
+  font-family: "Josefin Slab", "serif";
+  font-weight: 900;
+  
+}
+
+#header a{
+  color: white;
+}
+
+#header{
+  height: 60px;
+  line-height: 60px;
+  background-color: #0C8DE8;
+/*  position: fixed;
+  top: 0;
+  left: 100px;*/
+  z-index: 100;
+  color: white;
 }

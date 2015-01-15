@@ -23,7 +23,9 @@ $(function() {
     events: {
       "click .log-out": "logOut",
       "click #submit": "submit",
-      "click #snap": "snap"
+      "click #snap": "snap",
+      "click #retake": "retake",
+      "blur input": "validate"
     },
 
     el: ".content",
@@ -34,10 +36,12 @@ $(function() {
     initialize: function() {
       var self = this;
 
-      _.bindAll(this, 'render', 'logOut', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage');
+      _.bindAll(this, 'render', 'logOut', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
 
       // Main todo management template
       this.$el.html(_.template($("#register-form-template").html()));
+
+      this.picTaken = null;
 
       this.video = document.querySelector('video');
       this.canvas = document.getElementById("canvas"),
@@ -75,6 +79,12 @@ $(function() {
       delete this;
     },
 
+    validate: function(e){
+      if(e.target.id === "phonenumber"){
+        e.target.value = e.target.value.replace(/\D/g,'');
+      }
+    },
+
     // Re-rendering the App just means refreshing the statistics -- the rest
     // of the app doesn't change.
     render: function() {
@@ -88,12 +98,23 @@ $(function() {
       return image.src;
     },
 
+    retake: function(e) {
+      this.$('#canvas-div').addClass("hide");
+      this.$('#video-div').removeClass("hide");
+    },
+
     snap: function(e) {
+      this.$('#canvas-div').removeClass("hide");
+      this.$('#video-div').addClass("hide");
       this.context.drawImage(video, 0, 0, 640, 480);
       this.convertCanvasToImage(this.canvas);
     },
-    // If you hit return in the main input field, create new Todo model
+
     submit: function(e) {
+      if(this.$('#canvas-div').hasClass("hide")){
+        alert("Take a picture");
+        return;
+      }
       var formdata = document.getElementById("info");
 
       var form = new this.Form();
@@ -134,7 +155,7 @@ $(function() {
     el: ".content",
     
     initialize: function() {
-      _.bindAll(this, "signUp");
+      _.bindAll(this, "signUp", "close");
       this.render();
     },
 
@@ -184,7 +205,7 @@ $(function() {
     el: ".content",
     
     initialize: function() {
-      _.bindAll(this, "logIn");
+      _.bindAll(this, "logIn", "close");
       this.render();
     },
 
@@ -232,7 +253,7 @@ $(function() {
     el: ".content",
     
     initialize: function() {
-      _.bindAll(this, "logIn");
+      _.bindAll(this, "logIn", "close");
 
       // {email: "b@gmail.com",
       //             fileurl: "http://files.parsetfss.com/483e5f02-671f-4596-9410-d4f5b27d06e9/tfss-e1317052-f8ba-4fb3-932e-1d2bea4542e6-myfile.png",
@@ -374,6 +395,8 @@ $(function() {
     },
 
     loadView : function(view) {
+      console.log(this.view);
+      console.log(view);
       this.view && (this.view.close ? this.view.close() : this.view.remove());
       this.view = view;
     }
