@@ -112,6 +112,7 @@ $(function() {
       var formdata = document.getElementById("info");
 
       var form = new this.Form();
+      var temp = this;
 
       var file = new Parse.File("myfile.png", {base64: this.convertCanvasToImage(this.canvas)});
       file.save().then(function() {
@@ -128,7 +129,9 @@ $(function() {
           success: function(form) {
             // Execute any logic that should take place after the object is saved.
             alert('Submitted!');
-            this.render();
+            formdata.reset();
+            console.log(this);
+            temp.retake();
           },
           error: function(form, error) {
             // Execute any logic that should take place if the save fails.
