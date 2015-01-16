@@ -105,11 +105,16 @@ $(function() {
     },
 
     submit: function(e) {
+      if(this.$('#submit').hasClass("disabled")){
+        return;
+      }
+
       if(this.$('#canvas-div').hasClass("hide")){
         alert("Take a picture");
         return;
       }
       
+      this.$('#submit').addClass("disabled");
       var formdata = document.getElementById("info");
       var form = new this.Form();
       var temp = this;
@@ -134,6 +139,7 @@ $(function() {
             formdata.reset();
             console.log(this);
             temp.retake();
+            temp.$('#submit').removeClass("disabled");
           },
           error: function(form, error) {
             // Execute any logic that should take place if the save fails.
