@@ -36,7 +36,7 @@ $(function() {
       _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
 
       // Main todo management template
-      this.$el.html(_.template($("#register-form-template").html()));
+      this.render();
 
       this.picTaken = null;
 
@@ -82,8 +82,8 @@ $(function() {
     // Re-rendering the App just means refreshing the statistics -- the rest
     // of the app doesn't change.
     render: function() {
+      this.$el.html(_.template($("#register-form-template").html()));
       this.delegateEvents();
-
     },
 
     convertCanvasToImage: function(canvas) {
@@ -128,6 +128,7 @@ $(function() {
           success: function(form) {
             // Execute any logic that should take place after the object is saved.
             alert('Submitted!');
+            this.render();
           },
           error: function(form, error) {
             // Execute any logic that should take place if the save fails.
@@ -280,6 +281,8 @@ var RushView = Parse.View.extend({
             dict["email"] = array[obj].get("email");
             dict["hometown"] = array[obj].get("hometown");
             dict["phonenumber"] = array[obj].get("phonenumber");
+            dict["custom1"] = array[obj].get("custom1");
+            dict["custom2"] = array[obj].get("custom2");
             variables["array"].push(dict);
           }
           this.variables = variables;
