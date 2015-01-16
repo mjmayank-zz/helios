@@ -1,6 +1,3 @@
-// An example Parse.js Backbone application based on the todo app by
-// [Jérôme Gravel-Niquet](http://jgn.me/). This demo uses Parse to persist
-// the todo items and provide user authentication and sessions.
 
 $(function() {
 
@@ -8,7 +5,7 @@ $(function() {
 
   // Initialize Parse with your Parse application javascript keys
   Parse.initialize("KyueCTE3edcgkBYXNWK8xUELxvLXdrOR4hoCcbLB",
-                   "GauBt1jLTOfVaCdzoD3yCe8ZI1AaC3Wec9ekyx7l");
+   "GauBt1jLTOfVaCdzoD3yCe8ZI1AaC3Wec9ekyx7l");
 
 
 ////replace here if necessary
@@ -21,7 +18,6 @@ $(function() {
 
     // Delegated events for creating new items, and clearing completed ones.
     events: {
-      "click .log-out": "logOut",
       "click #submit": "submit",
       "click #snap": "snap",
       "click #retake": "retake",
@@ -34,9 +30,10 @@ $(function() {
     // collection, when items are added or changed. Kick things off by
     // loading any preexisting todos that might be saved to Parse.
     initialize: function() {
+      console.log("initialize register");
       var self = this;
 
-      _.bindAll(this, 'render', 'logOut', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
+      _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
 
       // Main todo management template
       this.$el.html(_.template($("#register-form-template").html()));
@@ -45,7 +42,7 @@ $(function() {
 
       this.video = document.querySelector('video');
       this.canvas = document.getElementById("canvas"),
-          this.context = canvas.getContext("2d");
+      this.context = canvas.getContext("2d");
       this.Form = Parse.Object.extend("Form");
 
       navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
@@ -71,17 +68,14 @@ $(function() {
       console.error('Error on getUserMedia', error);
     },
 
-    // Logs out the user and shows the login view
-    logOut: function(e) {
-      Parse.User.logOut();
-      new LogInView();
-      this.undelegateEvents();
-      delete this;
-    },
-
     validate: function(e){
+      console.log(e.target.class);
       if(e.target.id === "phonenumber"){
         e.target.value = e.target.value.replace(/\D/g,'');
+      }
+      else if(e.target.id === "email"){
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        re.test(e.target.value);
       }
     },
 
@@ -118,13 +112,16 @@ $(function() {
       var formdata = document.getElementById("info");
 
       var form = new this.Form();
-     
+
       var file = new Parse.File("myfile.png", {base64: this.convertCanvasToImage(this.canvas)});
       file.save().then(function() {
 
         form.set("name", formdata.elements[0].value);
         form.set("email", formdata.elements[1].value);
-        form.set("hometown", formdata.elements[2].value);
+        form.set("hometown", formdata.elements[2].value.replace(/,/g,''));
+        form.set("phonenumber", formdata.elements[3].value);
+        form.set("custom1", formdata.elements[4].value);
+        form.set("custom2", formdata.elements[5].value);
         form.set("pic", file);
         form.set("ACL", new Parse.ACL(Parse.User.current()));
         form.save(null, {
@@ -141,119 +138,122 @@ $(function() {
       });
     },
     close: function() {
+      video.stop();
+      console.log("close form");
       _.each(this.subViews, function(view) { view.remove(); });
       this.remove();
     }
 
   });
 
-  var SignUpView = Parse.View.extend({
-    events: {
-      "submit form.signup-form": "signUp"
-    },
+var SignUpView = Parse.View.extend({
+  events: {
+    "submit form.signup-form": "signUp"
+  },
 
-    el: ".content",
-    
-    initialize: function() {
-      _.bindAll(this, "signUp", "close");
-      this.render();
-    },
+  el: ".content",
 
-    signUp: function(e) {
-      var self = this;
-      var org = this.$("#signup-frat-name").val();
-      var username = this.$("#signup-username").val();
-      var password = this.$("#signup-password").val();
-      
-      Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
-        success: function(user) {
-          console.log("signup done");
-          user.set("org", org);
-          user.save();
-          new RegisterFormView();
-          self.undelegateEvents();
-          delete self;
-        },
+  initialize: function() {
+    _.bindAll(this, "signUp", "close");
+    this.render();
+  },
 
-        error: function(user, error) {
-          self.$(".signup-form .error").html(_.escape(error.message)).show();
-          self.$(".signup-form button").removeAttr("disabled");
-        }
-      });
+  signUp: function(e) {
+    var self = this;
+    var org = this.$("#signup-frat-name").val();
+    var username = this.$("#signup-username").val();
+    var password = this.$("#signup-password").val();
 
-      this.$(".signup-form button").attr("disabled", "disabled");
+    Parse.User.signUp(username, password, { ACL: new Parse.ACL() }, {
+      success: function(user) {
+        console.log("signup done");
+        user.set("org", org);
+        user.save();
+        new RegisterFormView();
+        self.undelegateEvents();
+        delete self;
+      },
 
-      return false;
-    },
+      error: function(user, error) {
+        self.$(".signup-form .error").html(_.escape(error.message)).show();
+        self.$(".signup-form button").removeAttr("disabled");
+      }
+    });
 
-    render: function() {
-      this.$el.html(_.template($("#signup-template").html()));
-      this.delegateEvents();
-    },
-    close: function() {
-      _.each(this.subViews, function(view) { view.remove(); });
-      this.remove();
-    }
+    this.$(".signup-form button").attr("disabled", "disabled");
 
-  });
+    return false;
+  },
 
-  var LogInView = Parse.View.extend({
-    events: {
-      "submit form.login-form": "logIn",
-    },
+  render: function() {
+    this.$el.html(_.template($("#signup-template").html()));
+    this.delegateEvents();
+  },
+  close: function() {
+    _.each(this.subViews, function(view) { view.remove(); });
+    this.remove();
+  }
 
-    el: ".content",
-    
-    initialize: function() {
-      _.bindAll(this, "logIn", "close");
-      this.render();
-    },
+});
 
-    logIn: function(e) {
-      var self = this;
-      var username = this.$("#login-username").val();
-      var password = this.$("#login-password").val();
-      
-      Parse.User.logIn(username, password, {
-        success: function(user) {
-          new RegisterFormView();
-          self.undelegateEvents();
-          delete self;
-        },
+var LogInView = Parse.View.extend({
+  events: {
+    "submit form.login-form": "logIn",
+  },
 
-        error: function(user, error) {
-          self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
-          self.$(".login-form button").removeAttr("disabled");
-        }
-      });
+  el: ".content",
 
-      this.$(".login-form button").attr("disabled", "disabled");
+  initialize: function() {
+    _.bindAll(this, "logIn", "close");
+    this.render();
+  },
 
-      return false;
-    },
+  logIn: function(e) {
+    var self = this;
+    var username = this.$("#login-username").val();
+    var password = this.$("#login-password").val();
 
-    render: function() {
-      this.$el.html(_.template($("#login-template").html()));
-      this.delegateEvents();
-    },
+    Parse.User.logIn(username, password, {
+      success: function(user) {
+        new RegisterFormView();
+        self.undelegateEvents();
+        delete self;
+      },
 
-    close: function() {
-      _.each(this.subViews, function(view) { view.remove(); });
-      this.remove();
-    }
+      error: function(user, error) {
+        self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
+        self.$(".login-form button").removeAttr("disabled");
+      }
+    });
 
-  });
+    this.$(".login-form button").attr("disabled", "disabled");
 
-  var RushView = Parse.View.extend({
-    events: {
-      "submit form.login-form": "logIn",
-      "click #download-csv":"downloadCSV"
-    },
+    return false;
+  },
 
-    el: ".content",
-    
-    initialize: function() {
-      _.bindAll(this, "logIn", "close");
+  render: function() {
+    this.$el.html(_.template($("#login-template").html()));
+    this.delegateEvents();
+  },
+
+  close: function() {
+    _.each(this.subViews, function(view) { view.remove(); });
+    this.remove();
+  }
+
+});
+
+var RushView = Parse.View.extend({
+  events: {
+    "click .log-out": "logOut",
+    "submit form.login-form": "logIn",
+    "click #download-csv":"downloadCSV"
+  },
+
+  el: ".content",
+
+  initialize: function() {
+    _.bindAll(this, "logIn", "close", "logOut");
 
       // {email: "b@gmail.com",
       //             fileurl: "http://files.parsetfss.com/483e5f02-671f-4596-9410-d4f5b27d06e9/tfss-e1317052-f8ba-4fb3-932e-1d2bea4542e6-myfile.png",
@@ -263,7 +263,7 @@ $(function() {
       var variables = {
         "array": []
       }
-
+      console.log("initialize rushes");
       this.variables = variables;
 
       this.render(variables);
@@ -279,6 +279,7 @@ $(function() {
             dict["name"] = array[obj].get("name");
             dict["email"] = array[obj].get("email");
             dict["hometown"] = array[obj].get("hometown");
+            dict["phonenumber"] = array[obj].get("phonenumber");
             variables["array"].push(dict);
           }
           this.variables = variables;
@@ -311,11 +312,9 @@ $(function() {
       // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
       var csvContent = "data:text/csv;charset=utf-8,";
       data.forEach(function(infoArray, index){
-
-         dataString = infoArray.join(",");
-         csvContent += dataString + "\n";
-
-      }); 
+        dataString = infoArray.join(",");
+        csvContent += dataString + "\n";
+     }); 
 
       var encodedUri = encodeURI(csvContent);
       window.open(encodedUri);
@@ -344,66 +343,74 @@ $(function() {
       return false;
     },
 
+    // Logs out the user and shows the login view
+    logOut: function(e) {
+      Parse.User.logOut();
+      new LogInView();
+      this.undelegateEvents();
+      delete this;
+    },
+
     render: function(variables) {
       this.$el.html(_.template($("#rush-list-template").html(), variables));
       this.delegateEvents();
     },
 
     close: function() {
+      console.log("close rushes");
       _.each(this.subViews, function(view) { view.remove(); });
       this.remove();
     }
 
   });
 
-  var AppRouter = Parse.Router.extend({
-    routes: {
-      "view": "view",
-      "form": "form",
-      "signup": "signup",
-      "*path": "view"
-    },
+var AppRouter = Parse.Router.extend({
+  routes: {
+    "rushes": "rushes",
+    "form": "form",
+    "signup": "signup",
+    "*path": "rushes"
+  },
 
-    initialize: function(options) {
-      if(!this.checkCurrentUser()){
-        console.log("initialize");
-        this.loadView(new LogInView());
-      }
-      console.log("false");
-    },
-
-    form: function() {
-      console.log("register");
-      this.loadView(new RegisterFormView());
-    },
-
-    view: function() {
-      console.log("view");
-      this.loadView(new RushView());
-    },
-
-    signup: function() {
-      console.log("signup");
-      this.loadView(new SignUpView());
-    },
-
-    checkCurrentUser: function() {
-      if(Parse.User.current()){
-        return true;
-      }
-      return false;
-    },
-
-    loadView : function(view) {
-      console.log(this.view);
-      console.log(view);
-      this.view && (this.view.close ? this.view.close() : this.view.remove());
-      this.view = view;
+  initialize: function(options) {
+    if(!this.checkCurrentUser()){
+      console.log("initialize", this.view);
+      this.loadView(new LogInView());
     }
+    console.log("initialize");
+  },
 
-  });
+  form: function() {
+    console.log("register");
+    this.loadView(new RegisterFormView());
+  },
 
-  var router = new AppRouter;
+  rushes: function() {
+    console.log("view");
+    this.loadView(new RushView());
+  },
+
+  signup: function() {
+    console.log("signup");
+    this.loadView(new SignUpView());
+  },
+
+  checkCurrentUser: function() {
+    if(Parse.User.current()){
+      return true;
+    }
+    return false;
+  },
+
+  loadView : function(view) {
+    // this.view && (this.view.close ? this.view.close() : this.view.remove());
+    // this.view && this.view.remove();
+    this.view = view;
+  }
+
+});
+
+var router = new AppRouter;
   // new AppView;
   Parse.history.start();
 });

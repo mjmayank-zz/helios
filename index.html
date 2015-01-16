@@ -57,28 +57,26 @@
   </script>
 
   <script type="text/template" id="register-form-template">
-  <div class="row sticky" id="header">
-    <div class="medium-10 columns">
-      <header >RushTracker</header>
-    </div>
-    <div class="medium-2 columns">
-      <div class="text-center" id="user-info">
-        <%= Parse.User.current().escape("username") %><br /><a href="#" class="log-out">Log out</a>
+      <div class="nav" id="header">
+        <div class="small-6 columns">
+          <header >RushTracker</header>
+        </div>
+        <div class="small-6 columns">
+          <ul class="right">
+            <li><a href="/#/rushes">Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+    <div class="row">
+      <div class="small-12 columns text-center">
+        <h1><%= Parse.User.current().escape("org") %> Rush Signup</h1>
       </div>
     </div>
-  </div>
-  <div class="row">
-
-  <div class="small-12 columns text-center">
-    <h1><%= Parse.User.current().escape("org") %> Rush Signup</h1>
-  </div>
-
-  </div>
-
 
     <form id="info">
       <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 large-8 large-offset-2 columns">
           <label>
             Name:
             <input type="text" id="name" placeholder="Name" />
@@ -86,26 +84,42 @@
         </div>
       </div>
       <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
             Email:
-            <input type="text" id="email" placeholder="Email" />
+            <input type="text" class="required" id="email" placeholder="Email" />
           </label>
         </div>
       </div>
       <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
             Hometown:
-            <input type="text" id="hometown" placeholder="Hometown" />
+            <input type="text" class="required" id="hometown" placeholder="Hometown" />
           </label>
         </div>
       </div>
       <div class="row">
-        <div class="large-12 columns">
+        <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
             Phone Number:
-            <input type="text" id="phonenumber" placeholder="Phone Number" />
+            <input type="text" class="required" id="phonenumber" placeholder="Phone Number" />
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 medium-8 medium-offset-2 columns">
+          <label>
+            Sum up Tim Tebow in 2 words:
+            <input type="text" class="required" id="custom1" placeholder="" />
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 medium-8 medium-offset-2 columns">
+          <label>
+            What is your favorite vice?:
+            <input type="text" class="required" id="custom2" placeholder="" />
           </label>
         </div>
       </div>
@@ -115,36 +129,39 @@
       <div class="small-12 columns">
         <video id="video" muted loop autoplay></video>
       </div>
-      <div class="medium-12 columns">
-          <a class="button" id="snap">SNAP PHOTO</a>
+      <div class="small-12 columns">
+          <a class="button camera" id="snap">SNAP PHOTO</a>
       </div>
     </div>
 
-      <div id="canvas-div" class="row text-center hide">
+    <div id="canvas-div" class="row text-center hide">
       <div class="small-12 columns">
         <canvas id="canvas" width="640" height="480"></canvas>
       </div>
       <div class="medium-12 columns">
-          <a class="button" id="retake">RETAKE</a>
+          <a class="button camera" id="retake">RETAKE</a>
       </div>
-
-      </div>
+    </div>
 
     <div class="row text-center">
       <div class="medium-12 columns">
         <a href="/#/form" class="button success" id="submit">SUBMIT</a>
       </div>
     </div>
-
   </script>
 
   <script type="text/template" id="rush-list-template">
-    <div class="row" id="header">
-      <div class="small-9 columns">
-        <header >RushTracker</header>
-      </div>
-      <div class="small-3 columns">
-        <a href="/#/form">Back to Form</a>
+    <div class="contain-to-grid">  
+      <div class="nav" id="header">
+        <div class="small-6 columns">
+          <header >RushTracker</header>
+        </div>
+        <div class="small-6 columns">
+          <ul class="right">
+            <li><a href="/#/form">Back to Form</a></li>
+            <li><a href="#" class="log-out">Log out</a></li>
+          </ul>
+        </div>
       </div>
     </div>
     <% _.each(array, function(rushee){ %>
@@ -157,15 +174,16 @@
             <h1><%= rushee['name'] %></h1>
             <h6><%= rushee['email'] %></h6>
             <h6><%= rushee['hometown'] %></h6>
+            <h6><%= rushee['phonenumber'] %></h6>
           </div>
           <div class="medium-3 columns">
-            <a class="button alert">DROP</a>
+            <a class="button alert drop">DROP</a>
           </div>
         </div>
       </div>
       <% }); %>
     <div class="row text-center">
-    <a class="button tiny"id="download-csv">Download to CSV</a>
+    <a class="button tiny" id="download-csv">DOWNLOAD CSV</a>
     </div>
   </script>
 

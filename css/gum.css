@@ -36,12 +36,11 @@ video,
   transform: rotateY(180deg) rotate3d(1, 0, 0, 0deg); 
 }
 
-.rush_card:nth-child(even){
+.rush-card{
   padding: 10px 0px!important;
 }
 
 .rush-card:nth-child(odd){
-  padding: 10px 0px!important;
   background-color: #e1e1e1;
 }
 
@@ -57,8 +56,31 @@ header{
   
 }
 
+.camera{
+  margin: auto;
+  margin-top: -6px;
+  width: 100%;
+  max-width: 640px;
+}
+
+#submit{
+  margin-top: 15px;
+}
+
 #header a{
   color: white;
+}
+
+.drop{
+  margin-top: 66px;
+}
+
+.contain-to-grid{
+  background-color: #0C8DE8;
+}
+
+#download-csv{
+  margin-top: 20px;
 }
 
 #header{
@@ -70,4 +92,65 @@ header{
   left: 100px;*/
   z-index: 100;
   color: white;
+}
+
+.nav ul {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.nav li {
+  font-size: 1.2em;
+  line-height: 60px;
+  height: 60px;
+  border-bottom: 1px solid #888;
+}
+ 
+.nav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: .3s background-color;
+}
+ 
+.nav li:hover {
+  background-color: #0374E8;
+}
+ 
+.nav a.active {
+  background-color: #fff;
+  color: #444;
+  cursor: default;
+}
+ 
+@media screen and (min-width: 600px) {
+  .nav li {
+    padding: 0 15px;
+    border-bottom: none;
+    height: 60px;
+    line-height: 60px;
+    font-size: 1.4em;
+  }
+ 
+  /* Option 1 - Display Inline */
+  .nav li {
+    display: inline-block;
+    margin-right: -4px;
+  }
+ 
+  /* Options 2 - Float
+  .nav li {
+    float: left;
+  }
+  .nav ul {
+    overflow: auto;
+    width: 600px;
+    margin: 0 auto;
+  }
+  .nav {
+    background-color: #444;
+  }
+  */
 }
