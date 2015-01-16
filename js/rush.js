@@ -285,7 +285,9 @@ var RushView = Parse.View.extend({
             dict["name"] = array[obj].get("name");
             dict["email"] = array[obj].get("email");
             dict["hometown"] = array[obj].get("hometown");
+            dict["highschool"] = array[obj].get("highschool");
             dict["phonenumber"] = array[obj].get("phonenumber");
+            dict["residence"] = array[obj].get("residence");
             dict["custom1"] = array[obj].get("custom1");
             dict["custom2"] = array[obj].get("custom2");
             variables["array"].push(dict);
