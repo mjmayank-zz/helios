@@ -109,20 +109,22 @@ $(function() {
         alert("Take a picture");
         return;
       }
+      
       var formdata = document.getElementById("info");
-
       var form = new this.Form();
       var temp = this;
 
       var file = new Parse.File("myfile.png", {base64: this.convertCanvasToImage(this.canvas)});
       file.save().then(function() {
 
-        form.set("name", formdata.elements[0].value);
-        form.set("email", formdata.elements[1].value);
-        form.set("hometown", formdata.elements[2].value.replace(/,/g,''));
-        form.set("phonenumber", formdata.elements[3].value);
-        form.set("custom1", formdata.elements[4].value);
-        form.set("custom2", formdata.elements[5].value);
+        form.set("name", formdata.elements["name"].value);
+        form.set("email", formdata.elements["email"].value);
+        form.set("hometown", formdata.elements["hometown"].value.replace(/,/g,''));
+        form.set("highschool", formdata.elements["highschool"].value.replace(/,/g,''));
+        form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g,''));
+        form.set("residence", formdata.elements["residence"].value.replace(/,/g,''));
+        form.set("custom1", formdata.elements[5].value.replace(/,/g,''));
+        form.set("custom2", formdata.elements[6].value.replace(/,/g,''));
         form.set("pic", file);
         form.set("ACL", new Parse.ACL(Parse.User.current()));
         form.save(null, {
