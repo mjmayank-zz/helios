@@ -105,6 +105,7 @@ $(function() {
     },
 
     submit: function(e) {
+      console.log(video);
       if(this.$('#submit').hasClass("disabled")){
         return;
       }
@@ -128,8 +129,8 @@ $(function() {
         form.set("highschool", formdata.elements["highschool"].value.replace(/,/g,''));
         form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g,''));
         form.set("residence", formdata.elements["residence"].value.replace(/,/g,''));
-        form.set("custom1", formdata.elements[5].value.replace(/,/g,''));
-        form.set("custom2", formdata.elements[6].value.replace(/,/g,''));
+        form.set("custom1", formdata.elements["custom1"].value.replace(/,/g,''));
+        form.set("custom2", formdata.elements["custom2"].value.replace(/,/g,''));
         form.set("pic", file);
         form.set("ACL", new Parse.ACL(Parse.User.current()));
         form.save(null, {

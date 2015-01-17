@@ -126,7 +126,7 @@
       <div class="row">
         <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
-            Sum up Tim Tebow in 2 words:
+            <%= Parse.User.current().escape("custom1") %>
             <input type="text" class="required" id="custom1" placeholder="" />
           </label>
         </div>
@@ -134,7 +134,7 @@
       <div class="row">
         <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
-            What is your favorite vice?:
+            <%= Parse.User.current().escape("custom2") %>
             <input type="text" class="required" id="custom2" placeholder="" />
           </label>
         </div>
