@@ -181,7 +181,7 @@
       </div>
     </div>
     <% _.each(array, function(rushee){ %>
-      <div class="rush-card">
+      <div class="rush-card" id="<%= rushee['id'] %>">
         <div class="row">
           <div class="medium-3 columns">
             <img src="<%= rushee['fileurl'] %>">
@@ -197,7 +197,7 @@
             <h6>Vice: <%= rushee['custom2'] %></h6>
           </div>
           <div class="medium-3 columns">
-            <a class="button alert drop">DROP</a>
+            <a class="button alert drop" id="drop">DROP</a>
           </div>
         </div>
       </div>

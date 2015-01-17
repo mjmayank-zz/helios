@@ -259,14 +259,14 @@ var LogInView = Parse.View.extend({
 var RushView = Parse.View.extend({
   events: {
     "click .log-out": "logOut",
-    "submit form.login-form": "logIn",
-    "click #download-csv":"downloadCSV"
+    "click #download-csv":"downloadCSV",
+    "click #drop":"drop"
   },
 
   el: ".content",
 
   initialize: function() {
-    _.bindAll(this, "logIn", "close", "logOut");
+    _.bindAll(this, "drop", "close", "logOut");
 
       // {email: "b@gmail.com",
       //             fileurl: "http://files.parsetfss.com/483e5f02-671f-4596-9410-d4f5b27d06e9/tfss-e1317052-f8ba-4fb3-932e-1d2bea4542e6-myfile.png",
@@ -288,21 +288,27 @@ var RushView = Parse.View.extend({
         success: function(array) {
           // The object was retrieved successfully.
           for(obj in array){
-            var dict = {};
-            dict["fileurl"] = array[obj].get("pic").url();
-            dict["name"] = array[obj].get("name");
-            dict["email"] = array[obj].get("email");
-            dict["hometown"] = array[obj].get("hometown");
-            dict["highschool"] = array[obj].get("highschool");
-            dict["phonenumber"] = array[obj].get("phonenumber");
-            if(dict["phonenumber"].length == 10){
-              dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+            var status = array[obj].get("status");
+            if(status==null || status != "inactive"){
+              console.log(array[obj].get("status"));
+              var dict = {};
+              dict["fileurl"] = array[obj].get("pic").url();
+              dict["name"] = array[obj].get("name");
+              dict["email"] = array[obj].get("email");
+              dict["hometown"] = array[obj].get("hometown");
+              dict["highschool"] = array[obj].get("highschool");
+              dict["phonenumber"] = array[obj].get("phonenumber");
+              if(dict["phonenumber"].length == 10){
+                dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+              }
+              dict["residence"] = array[obj].get("residence");
+              dict["custom1"] = array[obj].get("custom1");
+              dict["custom2"] = array[obj].get("custom2");
+              dict["id"] = array[obj].id;
+              variables["array"].push(dict);
             }
-            dict["residence"] = array[obj].get("residence");
-            dict["custom1"] = array[obj].get("custom1");
-            dict["custom2"] = array[obj].get("custom2");
-            variables["array"].push(dict);
           }
+          variables["data"] = array;
           this.variables = variables;
           console.log("variables", variables);
           temp.render(variables);
@@ -341,27 +347,27 @@ var RushView = Parse.View.extend({
       window.open(encodedUri);
     },
 
-    logIn: function(e) {
-      var self = this;
-      var username = this.$("#login-username").val();
-      var password = this.$("#login-password").val();
-      
-      Parse.User.logIn(username, password, {
-        success: function(user) {
-          new RegisterFormView();
-          self.undelegateEvents();
-          delete self;
+    drop: function(e){
+      // console.log(e.target.parentNode.parentNode.parentNode.id);
+      var id = e.target.parentNode.parentNode.parentNode.id;
+      this.variables["array"]
+      var form = Parse.Object.extend("Form");
+      var query = new Parse.Query(form);
+      query.equalTo("objectId", id);
+      query.find({
+        success: function(array) {
+          // The object was retrieved successfully.
+            console.log(array[0]);
+            array[0].set("status", "inactive");
+            array[0].save();
+            console.log("saved");
         },
-
-        error: function(user, error) {
-          self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
-          self.$(".login-form button").removeAttr("disabled");
+        error: function(object, error) {
+          // The object was not retrieved successfully.
+          // error is a Parse.Error with an error code and message.
+          console.log("error");
         }
       });
-
-      this.$(".login-form button").attr("disabled", "disabled");
-
-      return false;
     },
 
     // Logs out the user and shows the login view
