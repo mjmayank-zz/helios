@@ -282,6 +282,7 @@ var RushView = Parse.View.extend({
       this.render(variables);
       var form = Parse.Object.extend("Form");
       var query = new Parse.Query(form);
+      query.limit(1000);
       var temp = this;
       query.find({
         success: function(array) {
@@ -294,6 +295,9 @@ var RushView = Parse.View.extend({
             dict["hometown"] = array[obj].get("hometown");
             dict["highschool"] = array[obj].get("highschool");
             dict["phonenumber"] = array[obj].get("phonenumber");
+            if(dict["phonenumber"].length == 10){
+              dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+            }
             dict["residence"] = array[obj].get("residence");
             dict["custom1"] = array[obj].get("custom1");
             dict["custom2"] = array[obj].get("custom2");
