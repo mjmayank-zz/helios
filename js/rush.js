@@ -348,26 +348,29 @@ var RushView = Parse.View.extend({
     },
 
     drop: function(e){
-      // console.log(e.target.parentNode.parentNode.parentNode.id);
-      var id = e.target.parentNode.parentNode.parentNode.id;
-      this.variables["array"]
-      var form = Parse.Object.extend("Form");
-      var query = new Parse.Query(form);
-      query.equalTo("objectId", id);
-      query.find({
-        success: function(array) {
-          // The object was retrieved successfully.
-            console.log(array[0]);
-            array[0].set("status", "inactive");
-            array[0].save();
-            console.log("saved");
-        },
-        error: function(object, error) {
-          // The object was not retrieved successfully.
-          // error is a Parse.Error with an error code and message.
-          console.log("error");
-        }
-      });
+      var confirm = window.confirm("Are you sure you want to drop him?");
+      if (confirm == true) {
+        // console.log(e.target.parentNode.parentNode.parentNode.id);
+        var id = e.target.parentNode.parentNode.parentNode.id;
+        this.variables["array"]
+        var form = Parse.Object.extend("Form");
+        var query = new Parse.Query(form);
+        query.equalTo("objectId", id);
+        query.find({
+          success: function(array) {
+            // The object was retrieved successfully.
+              console.log(array[0]);
+              array[0].set("status", "inactive");
+              array[0].save();
+              console.log("saved");
+          },
+          error: function(object, error) {
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+            console.log("error");
+          }
+        });
+      }
     },
 
     // Logs out the user and shows the login view
