@@ -209,6 +209,94 @@ var SignUpView = Parse.View.extend({
 
 });
 
+var ProfileView = Parse.View.extend({
+  events: {
+    "click #next": "next",
+  },
+
+  el: ".content",
+
+  initialize: function(rushid) {
+    console.log(rushid);
+    _.bindAll(this, "next", "close");
+
+    var variables = {};
+    var form = Parse.Object.extend("Form");
+    var query = new Parse.Query(form);
+    query.equalTo("objectId", rushid);
+    var temp = this;
+    query.find({
+      success: function(array) {
+        // The object was retrieved successfully.
+          variables["rushee"] = array[0];
+          // console.log(array[0]);
+          // console.log(variables);
+          // temp.variables = variables;
+          temp.render(variables);
+      },
+      error: function(object, error) {
+        // The object was not retrieved successfully.
+        // error is a Parse.Error with an error code and message.
+        console.log("error");
+      }
+    }).then(
+        function(array){
+          console.log("thest", array[0].createdAt, query);
+          var createdAt = array[0].createdAt;
+          query.limit(1);
+          query.equalTo("createdAt", array[0].createdAt);
+          console.log(query);
+          query.find({
+            success: function(array2) {
+              // The object was retrieved successfully.
+                console.log(array2);
+                this.$("#next").href = "/#/rushes/" + array2[0].id;
+            },
+            error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+              console.log("error");
+            }
+        });
+      });
+  },
+
+  next: function(e) {
+    console.log(this.variables["rushee"].createdAt);
+    var createdAt = this.variables["rushee"].createdAt;
+
+    var form = Parse.Object.extend("Form");
+    var query = new Parse.Query(form);
+    query.limit(1);
+    query.greaterThan("createdAt", createdAt);
+    var temp = this;
+    query.find({
+      success: function(array) {
+        // The object was retrieved successfully.
+          console.log(array[0].id);
+          e.target.href = "/#/rushes/" + array[0].id;
+      },
+      error: function(object, error) {
+        // The object was not retrieved successfully.
+        // error is a Parse.Error with an error code and message.
+        console.log("error");
+      }
+    });
+  },
+
+  render: function(variables) {
+    this.$el.html(_.template($("#rush-profile-template").html(), variables));
+    this.delegateEvents();
+  },
+
+  close: function() {
+    _.each(this.subViews, function(view) { view.remove(); });
+    this.remove();
+  }
+
+});
+
+
 var LogInView = Parse.View.extend({
   events: {
     "submit form.login-form": "logIn",
@@ -399,6 +487,7 @@ var AppRouter = Parse.Router.extend({
     "rushes": "rushes",
     "form": "form",
     "signup": "signup",
+    "rushes/:rushid": "profile",
     "*path": "rushes"
   },
 
@@ -423,6 +512,10 @@ var AppRouter = Parse.Router.extend({
   signup: function() {
     console.log("signup");
     this.loadView(new SignUpView());
+  },
+
+  profile: function(rushid) {
+    this.loadView(new ProfileView(rushid));
   },
 
   checkCurrentUser: function() {

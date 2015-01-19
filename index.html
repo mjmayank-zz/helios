@@ -127,6 +127,7 @@
         <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
             <%= Parse.User.current().escape("custom1") %>
+            <%= Parse.User.current().escape("org") %>
             <input type="text" class="required" id="custom1" placeholder="" />
           </label>
         </div>
@@ -188,7 +189,7 @@
             <img src="<%= rushee['fileurl'] %>">
           </div>
           <div class="medium-6 columns">
-            <h1><%= rushee['name'] %></h1>
+            <h1><a href="/#/rushes/<%= rushee['id'] %>"><%= rushee['name'] %></a></h1>
             <h6><%= rushee['email'] %></h6>
             <h6><%= rushee['hometown'] %></h6>
             <h6><%= rushee['highschool'] %></h6>
@@ -197,7 +198,7 @@
             <h6><%= Parse.User.current().escape("custom1") %> <%= rushee['custom1'] %></h6>
             <h6><%= Parse.User.current().escape("custom2") %> <%= rushee['custom2'] %></h6>
           </div>
-          <div class="medium-3 columns">
+          <div class="small-12 small-text-center medium-3 columns">
             <a class="button alert drop" id="drop">DROP</a>
           </div>
         </div>
@@ -205,6 +206,21 @@
       <% }); %>
     <div class="row text-center">
     <a class="button tiny" id="download-csv">DOWNLOAD CSV</a>
+    </div>
+  </script>
+
+  <script type="text/template" id="rush-profile-template">
+    <div>
+      <h1><%= rushee.get("name") %></h1>
+      <img src="<%= rushee.get('pic').url() %>">
+      <h6><%= rushee.get('hometown') %></h6>
+      <h6><%= rushee.get('highschool') %></h6>
+      <h6><%= rushee.get('phonenumber') %></h6>
+      <h6><%= rushee.get('residence') %></h6>
+      <h6><%= Parse.User.current().escape("custom1") %> <%= rushee.get('custom1') %></h6>
+      <h6><%= Parse.User.current().escape("custom2") %> <%= rushee.get('custom2') %></h6>
+      <a class="button" id="next">Next</a>
+      <a class="button" id="previous">Previous</a>
     </div>
   </script>
 
