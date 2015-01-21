@@ -24,6 +24,7 @@ canvas{
 .button{
   font-family: 'Lato';
   font-weight: 900;
+  text-transform: uppercase;
 }
 
 video,
@@ -71,16 +72,14 @@ header{
   color: white;
 }
 
-.drop{
-  margin-top: 66px;
+@media only screen and (min-width: 40.063em) { 
+  .drop{
+    margin-top: 66px;
+  }
 }
 
 .contain-to-grid{
   background-color: #0C8DE8;
-}
-
-#download-csv{
-  margin-top: 20px;
 }
 
 #header{
@@ -92,6 +91,14 @@ header{
   left: 100px;*/
   z-index: 100;
   color: white;
+}
+
+.contact-method{
+  margin-right: 5px;
+}
+
+.contact-method:not(:first-child){
+  margin-left: 15px;
 }
 
 .nav ul {
@@ -124,7 +131,21 @@ header{
   color: #444;
   cursor: default;
 }
- 
+
+.attribute{
+  font-weight: 900;
+}
+
+.profile{
+  font-size: 2em;
+}
+
+.profile .question{
+  font-size: .5em;
+  font-weight: 900;
+  margin-top: 15px;
+}
+
 @media screen and (min-width: 600px) {
   .nav li {
     padding: 0 15px;

@@ -5,6 +5,7 @@
   <title>RushTracker</title>
   <link href='//fonts.googleapis.com/css?family=Josefin+Slab:700' rel='stylesheet' type='text/css'>
   <link href='//fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="css/foundation-icons.css" />
   <link rel="stylesheet" href="css/foundation.css">
   <link href="css/gum.css" media="all" rel="stylesheet" type="text/css"/>
   <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
@@ -127,7 +128,6 @@
         <div class="small-12 medium-8 medium-offset-2 columns">
           <label>
             <%= Parse.User.current().escape("custom1") %>
-            <%= Parse.User.current().escape("org") %>
             <input type="text" class="required" id="custom1" placeholder="" />
           </label>
         </div>
@@ -176,51 +176,119 @@
         </div>
         <div class="small-6 columns">
           <ul class="right">
+            <li><a id="download-csv">Get CSV</a></li>
             <li><a href="/#/form">Back to Form</a></li>
             <li><a href="#" class="log-out">Log out</a></li>
           </ul>
         </div>
       </div>
     </div>
-    <% _.each(array, function(rushee){ %>
-      <div class="rush-card" id="<%= rushee['id'] %>">
+    <div class="row text-center">
+      <ul class="button-group">
+        <li class="button secondary">DROPPED</li>
+        <li class="button">ACTIVE</li>
+        <li class="button secondary">All</li>
+      </ul>
+    </div>
+    <div class="row text-center">
+      <ul class="button-group">
+        <li class="button secondary">I Met</li>
+        <li class="button">All</li>
+      </ul>
+    </div>
+    <% _.each(data, function(rushee){ %>
+      <div class="rush-card" id="<%= rushee.id %>">
         <div class="row">
           <div class="medium-3 columns">
-            <img src="<%= rushee['fileurl'] %>">
+            <img src="<%= rushee.get('pic').url() %>">
           </div>
-          <div class="medium-6 columns">
-            <h1><a href="/#/rushes/<%= rushee['id'] %>"><%= rushee['name'] %></a></h1>
-            <h6><%= rushee['email'] %></h6>
-            <h6><%= rushee['hometown'] %></h6>
-            <h6><%= rushee['highschool'] %></h6>
-            <h6><%= rushee['phonenumber'] %></h6>
-            <h6><%= rushee['residence'] %></h6>
-            <h6><%= Parse.User.current().escape("custom1") %> <%= rushee['custom1'] %></h6>
-            <h6><%= Parse.User.current().escape("custom2") %> <%= rushee['custom2'] %></h6>
+          <div class="medium-7 columns">
+            <div class="row">
+              <div class="medium-12 column">
+                <h1><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
+                Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="medium-12 columns">
+                <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+
+
+                <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+
+
+                <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+              </div>
+            </div>
+            <div>
+              <%= Parse.User.current().escape("custom1") %> <span class="attribute"><%= rushee.get('custom1') %></span>
+            </div>
+            <div>
+              <%= Parse.User.current().escape("custom2") %> <span class="attribute"><%= rushee.get('custom2') %></span>
+            </div>
           </div>
-          <div class="small-12 small-text-center medium-3 columns">
+          <div class="small-12 small-text-center medium-2 columns">
+            <a id="talked" class="button">MET</a>
             <a class="button alert drop" id="drop">DROP</a>
           </div>
         </div>
       </div>
       <% }); %>
-    <div class="row text-center">
-    <a class="button tiny" id="download-csv">DOWNLOAD CSV</a>
-    </div>
   </script>
 
   <script type="text/template" id="rush-profile-template">
     <div>
-      <h1><%= rushee.get("name") %></h1>
-      <img src="<%= rushee.get('pic').url() %>">
-      <h6><%= rushee.get('hometown') %></h6>
-      <h6><%= rushee.get('highschool') %></h6>
-      <h6><%= rushee.get('phonenumber') %></h6>
-      <h6><%= rushee.get('residence') %></h6>
-      <h6><%= Parse.User.current().escape("custom1") %> <%= rushee.get('custom1') %></h6>
-      <h6><%= Parse.User.current().escape("custom2") %> <%= rushee.get('custom2') %></h6>
-      <a class="button" id="next">Next</a>
-      <a class="button" id="previous">Previous</a>
+      <div class="row">
+        <a href="/#/rushes"><- Back</a>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <h1><%= rushee.get("name") %></h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <img src="<%= rushee.get('pic').url() %>">
+        </div>
+      </div>
+      <div class="row profile">
+        <div class="small-12 columns">
+          <div class="row">
+            Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+          </div>
+          <div class="row">
+            <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+          </div>
+          <div class="row">
+            <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+          </div>
+          <div class="row">
+            <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+          </div>
+          <div class="row">
+            <div class="question">
+              <%= Parse.User.current().escape("custom1") %>
+            </div>
+              <%= rushee.get('custom1') %>
+          </div>
+          <div class="row">
+            <div class="question">
+              <%= Parse.User.current().escape("custom2") %>
+            </div>
+              <%= rushee.get('custom2') %>
+          </div>
+          <% _.each(talked, function(brother){ %>
+              <%= brother.get("username") %>
+          <% }); %>
+        </div>
+      </div>
+      <div class="row text-center">
+        <a id="talked" class="button">MET</a>
+        <ul class="button-group">
+          <li><a class="button" id="previous">Previous</a></li>
+          <li><a class="button" id="next">Next</a></li>
+        </ul>
+      </div>
     </div>
   </script>
 
