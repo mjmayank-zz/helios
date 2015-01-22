@@ -9,7 +9,7 @@ $(function() {
     // The Application
     // ---------------
 
-    // The main view that lets a user manage their todo items
+    // The form view that lets a user manage their todo items
     var RegisterFormView = Parse.View.extend({
 
         // Delegated events for creating new items, and clearing completed ones.
@@ -22,19 +22,47 @@ $(function() {
 
         el: ".content",
 
+        variables: {
+          "organization": [],
+          "formQuestions": [],
+          "orgName": ""
+        },
+
         // At initialization we bind to the relevant events on the `Todos`
         // collection, when items are added or changed. Kick things off by
         // loading any preexisting todos that might be saved to Parse.
-        initialize: function() {
+        initialize: function(orgid) {
             console.log("initialize register");
-            var self = this;
 
             _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
 
             // Main todo management template
-            this.render();
 
             this.picTaken = null;
+            this.render();
+            var that = this;
+
+            if(orgid == null){
+              Parse.User.current().get("organization").fetch({
+                success: function(myObj){
+                  that.variables["organization"] = myObj;
+                  that.variables["orgName"] = myObj.get("name");
+                  that.variables["formQuestions"] = myObj.get("formQuestions");
+                  this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
+                }
+              });
+            }
+            else{
+              this.orgid = orgid;
+              var org = Parse.Object.extend("Organization");
+              var query = new Parse.Query(org);
+              query.get(orgid).then(function(myObj){
+                that.variables["organization"] = myObj;
+                that.variables["orgName"] = myObj.get("name");
+                that.variables["formQuestions"] = myObj.get("formQuestions");
+                this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
+              });
+            }
 
             this.video = document.querySelector('video');
             this.canvas = document.getElementById("canvas"),
@@ -53,12 +81,17 @@ $(function() {
         gumSuccess: function(stream) {
             // window.stream = stream;
             if ('mozSrcObject' in video) {
+              console.log("1");
                 video.mozSrcObject = stream;
             } else if (window.webkitURL) {
+              console.log("2");
                 video.src = window.webkitURL.createObjectURL(stream);
             } else {
+              console.log("3");
                 video.src = stream;
             }
+            console.log("4");
+            this.stream = stream;
             video.play();
         },
 
@@ -78,7 +111,7 @@ $(function() {
         // Re-rendering the App just means refreshing the statistics -- the rest
         // of the app doesn't change.
         render: function() {
-            this.$el.html(_.template($("#register-form-template").html()));
+            this.$el.html(_.template($("#register-form-template").html(), this.variables));
             this.delegateEvents();
         },
 
@@ -114,32 +147,30 @@ $(function() {
             this.$('#submit').addClass("disabled");
             var formdata = document.getElementById("info");
             var form = new this.Form();
-            var temp = this;
+            var that = this;
 
             var file = new Parse.File("myfile.png", {
                 base64: this.convertCanvasToImage(this.canvas)
             });
             file.save().then(function() {
-
                 form.set("name", formdata.elements["name"].value);
                 form.set("email", formdata.elements["email"].value);
                 form.set("hometown", formdata.elements["hometown"].value.replace(/,/g, ''));
                 form.set("highschool", formdata.elements["highschool"].value.replace(/,/g, ''));
                 form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g, ''));
                 form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
-                form.set("custom1", formdata.elements["custom1"].value.replace(/,/g, ''));
-                form.set("custom2", formdata.elements["custom2"].value.replace(/,/g, ''));
+                for(var q in that.variables["formQuestions"]){
+                  form.add("customQuestions", formdata.elements["custom" + q].value.replace(/,/g, ''));
+                }
+                form.addUnique("organizations", that.variables["organization"]);
                 form.set("pic", file);
-                var postACL = new Parse.ACL();
-                postACL.setRoleWriteAccess("Pi Kapp", true);
-                form.set("ACL", postACL);
                 form.save(null, {
                     success: function(form) {
                         // Execute any logic that should take place after the object is saved.
                         alert('Submitted!');
                         formdata.reset();
-                        temp.retake();
-                        temp.$('#submit').removeClass("disabled");
+                        that.retake();
+                        that.$('#submit').removeClass("disabled");
                     },
                     error: function(form, error) {
                         // Execute any logic that should take place if the save fails.
@@ -150,17 +181,17 @@ $(function() {
             });
         },
         close: function() {
-            video.stop();
-            console.log("close form");
-            _.each(this.subViews, function(view) {
-                view.remove();
-            });
-            this.remove();
+            this.stream.stop();
+            // console.log("close form");
+            // _.each(this.subViews, function(view) {
+            //     view.remove();
+            // });
+            // this.remove();
         }
 
     });
 
-    var SignUpView = Parse.View.extend({
+    var orgSignupView = Parse.View.extend({
         events: {
             "submit form.signup-form": "signUp"
         },
@@ -183,11 +214,17 @@ $(function() {
             }, {
                 success: function(user) {
                     console.log("signup done");
-                    user.set("org", org);
-                    user.save();
-                    new RegisterFormView();
-                    self.undelegateEvents();
-                    delete self;
+                    var form = Parse.Object.extend("Organization");
+                    var obj = new form();
+                    obj.set("name", org);
+                    obj.save().then(function(myObj){
+                      console.log("saved", myObj);
+                      user.set("organization", myObj);
+                      user.save();
+                      new RegisterFormView();
+                      self.undelegateEvents();
+                      delete self;
+                    });
                 },
 
                 error: function(user, error) {
@@ -202,7 +239,79 @@ $(function() {
         },
 
         render: function() {
-            this.$el.html(_.template($("#signup-template").html()));
+            this.$el.html(_.template($("#org-signup-template").html()));
+            this.delegateEvents();
+        },
+        close: function() {
+            _.each(this.subViews, function(view) {
+                view.remove();
+            });
+            this.remove();
+        }
+
+    });
+
+    var memberSignupView = Parse.View.extend({
+        events: {
+            "submit form.signup-form": "signUp"
+        },
+
+        el: ".content",
+
+        variables: {
+
+        },
+
+        initialize: function(orgid) {
+            _.bindAll(this, "signUp", "close");
+
+            this.orgid = orgid;
+            var org = Parse.Object.extend("Organization");
+            var query = new Parse.Query(org);
+            var that = this;
+            query.get(orgid).then(function(myObj){
+              console.log("found org", myObj);
+              that.variables["org"] = myObj;
+              that.variables["orgName"] = myObj.get("name");
+              that.render();
+            });
+        },
+
+        signUp: function(e) {
+            var self = this;
+            var name = this.$("#signup-member-name").val();
+            var username = this.$("#signup-username").val();
+            var password = this.$("#signup-password").val();
+            var org = this.variables["org"];
+
+            Parse.User.signUp(username, password, {
+                ACL: new Parse.ACL()
+            }, {
+                success: function(user) {
+                    console.log("signup done");
+                    user.set("name", name);
+                    user.set("organization", org);
+                    user.save().then(function(myObj){
+                      console.log("saved new member");
+                      new DashboardView();
+                      self.undelegateEvents();
+                      delete self;
+                    });
+                },
+
+                error: function(user, error) {
+                    self.$(".signup-form .error").html(_.escape(error.message)).show();
+                    self.$(".signup-form button").removeAttr("disabled");
+                }
+            });
+
+            this.$(".signup-form button").attr("disabled", "disabled");
+
+            return false;
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#member-signup-template").html(), this.variables));
             this.delegateEvents();
         },
         close: function() {
@@ -222,7 +331,9 @@ $(function() {
         el: ".content",
 
         variables: {
-          "talked": []
+          "talked": [],
+          "previous": "",
+          "next": ""
         },
 
         initialize: function(rushid) {
@@ -231,21 +342,20 @@ $(function() {
             this.rushid = rushid;
             var form = Parse.Object.extend("Form");
             var query = new Parse.Query(form);
-            query.equalTo("objectId", rushid);
-            var temp = this;
-            query.find().then(
-                function(array) {
+            var that = this;
+            query.get(rushid).then(
+                function(myObj) {
                     // The object was retrieved successfully.
-                    var rushee = array[0];
-                    temp.variables["rushee"] = rushee;
-                    temp.render(temp.variables);
+                    var rushee = myObj;
+                    that.variables["rushee"] = rushee;
+                    that.render();
 
                     var talkedarr = rushee.get("talked");
-                    for(var brother in talkedarr){
-                      talkedarr[brother].fetch({
+                    for(var member in talkedarr){
+                      talkedarr[member].fetch({
                         success: function(myObj){
-                            temp.variables["talked"].push(myObj);
-                            temp.render(temp.variables);
+                            that.variables["talked"].push(myObj);
+                            that.render();
                         }
                       });
                     }
@@ -258,8 +368,9 @@ $(function() {
                         function(array) {
                             if (array.length != 0) {
                                 // The object was retrieved successfully.
-                                console.log("dates", array);
-                                temp.$("#next")[0].href = "/#/rushes/" + array[0].id;
+                                console.log("next", array);
+                                that.variables["previous"] = "/#/rushes/" + array[0].id;
+                                that.render()
                             }
                         });
 
@@ -271,8 +382,9 @@ $(function() {
                         function(array) {
                             if (array.length != 0) {
                                 // The object was retrieved successfully.
-                                console.log("dates", array);
-                                temp.$("#previous")[0].href = "/#/rushes/" + array[0].id;
+                                console.log("prev", array);
+                                that.variables["next"] = "/#/rushes/" + array[0].id;
+                                that.render();
                             }
                         })
                 },
@@ -286,12 +398,12 @@ $(function() {
 
         talked: function(e) {
             this.variables["rushee"].addUnique("talked", Parse.User.current());
-            this.variables["rushee"].rushee.save();
+            this.variables["rushee"].save();
             console.log("save");
         },
 
-        render: function(variables) {
-            this.$el.html(_.template($("#rush-profile-template").html(), variables));
+        render: function() {
+            this.$el.html(_.template($("#rush-profile-template").html(), this.variables));
             this.delegateEvents();
         },
 
@@ -354,12 +466,13 @@ $(function() {
 
     });
 
-    var RushView = Parse.View.extend({
+    var DashboardView = Parse.View.extend({
         events: {
             "click .log-out": "logOut",
             "click #download-csv": "downloadCSV",
             "click #drop": "drop",
-            "click #talked": "talked"
+            "click #talked": "talked",
+            "click #loadAll": "loadMore"
         },
 
         el: ".content",
@@ -370,7 +483,7 @@ $(function() {
         },
 
         initialize: function() {
-            _.bindAll(this, "drop", "close", "logOut", "downloadCSV", "talked");
+            _.bindAll(this, "drop", "close", "logOut", "downloadCSV", "talked", "loadMore");
 
             // {email: "b@gmail.com",
             //             fileurl: "http://files.parsetfss.com/483e5f02-671f-4596-9410-d4f5b27d06e9/tfss-e1317052-f8ba-4fb3-932e-1d2bea4542e6-myfile.png",
@@ -381,6 +494,14 @@ $(function() {
             this.render(this.variables);
             var form = Parse.Object.extend("Form");
 
+            var pq = new Parse.Query(form);
+            pq.equalTo("organizations", Parse.User.current().get("organization"));
+            pq.find({
+              success: function(array){
+                console.log("org", array);
+              }
+            })
+
             var notInactiveQuery = new Parse.Query(form);
             notInactiveQuery.notEqualTo("status", "inactive");
 
@@ -388,18 +509,20 @@ $(function() {
             notNullQuery.doesNotExist("status");
 
             var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+            // var query = new Parse.Query(form);
+            query.equalTo("organizations", Parse.User.current().get("organization"));
             query.descending("createdAt");
             query.limit(1000);
-            var temp = this;
+            var that = this;
             query.find({
                 success: function(array) {
                     // The object was retrieved successfully.
-                    temp.variables["data"] = array;
-                    temp.render(temp.variables);
+                    that.variables["data"] = array;
+                    that.render(that.variables);
                     for (obj in array) {
                         // console.log(array[obj].get('talked'));
                         if(array[obj].get('talked')){
-                          console.log(array[obj].get('talked'));
+                          console.log("talked", array[obj].get('talked'));
                         }
                         if(array[obj].get('talked') && array[obj].get('talked').indexOf(Parse.User.current()) > -1){
                           console.log("talked");
@@ -420,7 +543,7 @@ $(function() {
                             dict["custom1"] = array[obj].get("custom1");
                             dict["custom2"] = array[obj].get("custom2");
                             dict["fileurl"] = array[obj].get("pic").url();
-                            temp.variables["array"].push(dict);
+                            that.variables["array"].push(dict);
                         }
                     }
                 },
@@ -464,24 +587,15 @@ $(function() {
             if (confirm == true) {
                 // console.log(e.target.parentNode.parentNode.parentNode.id);
                 var id = e.target.parentNode.parentNode.parentNode.id;
-                this.variables["array"]
-                var form = Parse.Object.extend("Form");
-                var query = new Parse.Query(form);
-                query.equalTo("objectId", id);
-                query.find({
-                    success: function(array) {
-                        // The object was retrieved successfully.
-                        console.log(array[0]);
-                        array[0].set("status", "inactive");
-                        array[0].save();
-                        console.log("saved");
-                    },
-                    error: function(object, error) {
-                        // The object was not retrieved successfully.
-                        // error is a Parse.Error with an error code and message.
-                        console.log("error");
-                    }
-                });
+                for(var rushIndex in this.variables["data"]){
+                  var rush = this.variables["data"][rushIndex]
+                  if(rush.id === id){
+                      console.log(array[0]);
+                      array[0].set("status", "inactive");
+                      array[0].save();
+                      console.log("drop saved");
+                  }
+                }
             }
         },
 
@@ -496,6 +610,52 @@ $(function() {
                 break;
               }
             }
+        },
+
+        loadMore: function (e) {
+          console.log(e.target);
+          this.$('#loadAll').addClass("hide");
+          console.log("loadmore");
+          var that = this;
+          // we are starting a new load of results so set isLoading to true
+          this.isLoading = true;
+          // fetch is Backbone.js native function for calling and parsing the collection url
+          // this.twitterCollection.fetch({ 
+          //   success: function (tweets) {
+          //     // Once the results are returned lets populate our template
+          //     $(that.el).append(_.template(TwitterListTemplate, {tweets: tweets.models, _:_}));
+          //     // Now we have finished loading set isLoading back to false
+          //     that.isLoading = false;
+          //   }
+          // });
+          var form = Parse.Object.extend("Form");
+
+          var notInactiveQuery = new Parse.Query(form);
+          notInactiveQuery.notEqualTo("status", "inactive");
+
+          var notNullQuery = new Parse.Query(form);
+          notNullQuery.doesNotExist("status");
+
+          var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+          query.descending("createdAt");
+          query.skip(5);
+          query.limit(1000);
+          var that = this;
+          query.find({
+              success: function(array) {
+                  // The object was retrieved successfully.
+                  console.log(that.variables["data"]);
+                  console.log(array);
+                  that.variables["data"] = that.variables["data"].concat(array);
+                  console.log(that.variables["data"]);
+                  that.render(that.variables);
+              },
+              error: function(object, error) {
+                  // The object was not retrieved successfully.
+                  // error is a Parse.Error with an error code and message.
+                  console.log("error");
+              }
+          });
         },
 
         // Logs out the user and shows the login view
@@ -525,37 +685,62 @@ $(function() {
         routes: {
             "rushes": "rushes",
             "form": "form",
+            "form/:orgid": "orgForm",
             "signup": "orgSignup",
-            "signup/:orgid": "",
+            "signup/:orgid": "memberSignup",
             "rushes/:rushid": "profile",
             "*path": "rushes"
         },
 
         initialize: function(options) {
-            if (!this.checkCurrentUser()) {
-                console.log("initialize", this.view);
-                this.loadView(new LogInView());
-            }
             console.log("initialize");
         },
 
         form: function() {
             console.log("register");
-            this.loadView(new RegisterFormView());
+            if (!this.checkCurrentUser()) {
+                console.log("initialize", this.view);
+                this.loadView(new LogInView());
+            }
+            else{
+              this.loadView(new RegisterFormView());
+            }
+        },
+
+        orgForm: function(orgid){
+            console.log("orgForm");
+            this.loadView(new RegisterFormView(orgid));
         },
 
         rushes: function() {
-            console.log("view");
-            this.loadView(new RushView());
+            console.log("rushes");
+            if (!this.checkCurrentUser()) {
+                console.log("initialize", this.view);
+                this.loadView(new LogInView());
+            }
+            else{
+              this.loadView(new DashboardView());
+            }
         },
 
         orgSignup: function() {
-            console.log("signup");
-            this.loadView(new SignUpView());
+            console.log("org signup");
+            this.loadView(new orgSignupView());
+        },
+
+        memberSignup: function(orgid) {
+            console.log("member signup")
+            this.loadView(new memberSignupView(orgid));
         },
 
         profile: function(rushid) {
-            this.loadView(new ProfileView(rushid));
+            if (!this.checkCurrentUser()) {
+                console.log("initialize", this.view);
+                this.loadView(new LogInView());
+            }
+            else{
+              this.loadView(new ProfileView(rushid));
+            }
         },
 
         checkCurrentUser: function() {

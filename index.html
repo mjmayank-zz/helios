@@ -20,8 +20,7 @@
   <!-- Todo App Interface -->
 
   <div id="rushsignup">
-    <div class="content">
-    </div>
+    <div class="content"></div>
   </div>
 
   <!-- Templates -->
@@ -41,7 +40,7 @@
     </div>
   </script>
 
-  <script type="text/template" id="signup-template">
+  <script type="text/template" id="org-signup-template">
     <header id="header">RushTracker</header>
     <div class="row">
     <div class="small-12 columns">
@@ -57,116 +56,125 @@
     </div>
   </script>
 
-  <script type="text/template" id="register-form-template">
-      <div class="nav" id="header">
-        <div class="small-6 columns">
-          <header >RushTracker</header>
-        </div>
-        <div class="small-6 columns">
-          <ul class="right">
-            <li><a href="/#/rushes">Dashboard</a></li>
-          </ul>
-        </div>
-      </div>
-
+  <script type="text/template" id="member-signup-template">
+    <header id="header">RushTracker</header>
     <div class="row">
-      <div class="small-12 columns text-center">
-        <h1><%= Parse.User.current().escape("org") %> Rush Signup</h1>
-      </div>
-    </div>
-
-    <form id="info">
-      <div class="row">
-        <div class="small-12 large-8 large-offset-2 columns">
-          <label>
-            Name:
-            <input type="text" id="name" placeholder="Name" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            Computer ID:
-            <input type="text" class="required" id="email" placeholder="Email" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            Hometown, State:
-            <input type="text" class="required" id="hometown" placeholder="Hometown" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            High School:
-            <input type="text" class="required" id="highschool" placeholder="High School" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            Dorm, Room Number:
-            <input type="text" class="required" id="residence" placeholder="Residence" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            Phone Number:
-            <input type="text" class="required" id="phonenumber" placeholder="Phone Number" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            <%= Parse.User.current().escape("custom1") %>
-            <input type="text" class="required" id="custom1" placeholder="" />
-          </label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="small-12 medium-8 medium-offset-2 columns">
-          <label>
-            <%= Parse.User.current().escape("custom2") %>
-            <%= console.log(Parse.User.current().escape("custom2")) %>
-            <input type="text" class="required" id="custom2" placeholder="" />
-          </label>
-        </div>
-      </div>
-    </form>
-
-    <div id="video-div" class="row text-center">
-      <div class="small-12 columns">
-        <video id="video" muted loop autoplay></video>
-      </div>
-      <div class="small-12 columns">
-          <a class="button camera" id="snap">SNAP PHOTO</a>
-      </div>
-    </div>
-
-    <div id="canvas-div" class="row text-center hide">
-      <div class="small-12 columns">
-        <canvas id="canvas" width="640" height="480"></canvas>
-      </div>
-      <div class="medium-12 columns">
-          <a class="button camera" id="retake">RETAKE</a>
-      </div>
-    </div>
-
-    <div class="row text-center">
-      <div class="medium-12 columns">
-        <a href="/#/form" class="button success" id="submit">SUBMIT</a>
+    <div class="small-12 columns">
+      <form class="signup-form">
+        <h2><%= orgName %> Sign Up</h2>
+        <div class="error" style="display:none"></div>
+        <input type="text" id="signup-member-name" placeholder="Name" />
+        <input type="text" id="signup-username" placeholder="Username" />
+        <input type="password" id="signup-password" placeholder="Create a Password" />
+        <div class="text-center"><button>Sign Up</button></div>
+      </form>
       </div>
     </div>
   </script>
+
+  <script type="text/template" id="register-form-template">
+      <div class="nav" id="header">
+          <div class="small-6 columns">
+              <header >RushTracker</header>
+          </div>
+          <div class="small-6 columns">
+              <ul class="right">
+                  <li><a href="/#/rushes">Dashboard</a></li>
+              </ul>
+          </div>
+      </div>
+      <div class="row">
+          <div class="small-12 columns text-center">
+              <h1><%= orgName %> Rush Signup</h1>
+          </div>
+      </div>
+      <form id="info">
+          <div class="row">
+              <div class="small-12 large-8 large-offset-2 columns">
+                  <label>
+                  Name:
+                  <input type="text" id="name" placeholder="Name" />
+                  </label>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  Email:
+                  <input type="text" class="required" id="email" placeholder="Email" />
+                  </label>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  Hometown, State:
+                  <input type="text" class="required" id="hometown" placeholder="Hometown" />
+                  </label>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  High School:
+                  <input type="text" class="required" id="highschool" placeholder="High School" />
+                  </label>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  Dorm, Room Number:
+                  <input type="text" class="required" id="residence" placeholder="Residence" />
+                  </label>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  Phone Number:
+                  <input type="text" class="required" id="phonenumber" placeholder="Phone Number" />
+                  </label>
+              </div>
+          </div>
+          <div id="custom-questions">
+          </div>
+      </form>
+      <div id="video-div" class="row text-center">
+          <div class="small-12 columns">
+              <video id="video" muted loop autoplay></video>
+          </div>
+          <div class="small-12 columns">
+              <a class="button camera" id="snap">SNAP PHOTO</a>
+          </div>
+      </div>
+      <div id="canvas-div" class="row text-center hide">
+          <div class="small-12 columns">
+              <canvas id="canvas" width="640" height="480"></canvas>
+          </div>
+          <div class="medium-12 columns">
+              <a class="button camera" id="retake">RETAKE</a>
+          </div>
+      </div>
+      <div class="row text-center">
+          <div class="medium-12 columns">
+              <a href="/#/form" class="button success" id="submit">SUBMIT</a>
+          </div>
+      </div>
+  </script>
+
+  <script type="text/template" id="form-custom-questions">
+      <% _.each(formQuestions, function(question, index){ %>
+      <div class="row">
+        <div class="small-12 medium-8 medium-offset-2 columns">
+            <label>
+            <%= question %>
+            <input type="text" class="required" id="custom<%=index%>" placeholder="" />
+            </label>
+        </div>
+      </div>
+    <% }); %>
+</script>
 
   <script type="text/template" id="rush-list-template">
     <div class="contain-to-grid">  
@@ -234,6 +242,7 @@
         </div>
       </div>
       <% }); %>
+    <div class="text-center"><a id="loadAll" class="button">Load All</a></div>
   </script>
 
   <script type="text/template" id="rush-profile-template">
@@ -277,16 +286,26 @@
             </div>
               <%= rushee.get('custom2') %>
           </div>
+          <div class="row">
+          <div class="question">
+          Has talked to:
+          </div>
           <% _.each(talked, function(brother){ %>
-              <%= brother.get("username") %>
+              <%= brother.get("name") %>,
           <% }); %>
         </div>
+        </div>
+      </div>
+      <div class="row">
+      Comment:
+        <textarea rows="4" cols="50">
+        </textarea>
       </div>
       <div class="row text-center">
         <a id="talked" class="button">MET</a>
         <ul class="button-group">
-          <li><a class="button" id="previous">Previous</a></li>
-          <li><a class="button" id="next">Next</a></li>
+          <li><a href="<%= previous %>" class="button" id="previous">Previous</a></li>
+          <li><a href="<%= next %>" class="button" id="next">Next</a></li>
         </ul>
       </div>
     </div>
