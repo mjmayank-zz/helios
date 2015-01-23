@@ -20,15 +20,21 @@
   <!-- Todo App Interface -->
 
   <div id="rushsignup">
-    <div class="content"></div>
+    <div class="content">
+      <div id="test"></div>
+    </div>
   </div>
 
   <!-- Templates -->
 
   <script type="text/template" id="login-template">
-    <header id="header">RushTracker</header>
+    <div class="nav" id="header">
+        <div class="small-6 columns">
+            <header >RushTracker</header>
+        </div>
+    </div>
     <div class="row">
-    <div class="small-12 columns">
+      <div class="small-12 columns">
         <form class="login-form">
           <h2>Log In</h2>
           <div class="error" style="display:none"></div>
@@ -36,38 +42,46 @@
           <input type="password" id="login-password" placeholder="Password" />
           <div class="text-center"><button>Log In</button></div>
         </form>
-        </div>
+      </div>
     </div>
   </script>
 
   <script type="text/template" id="org-signup-template">
-    <header id="header">RushTracker</header>
+    <div class="nav" id="header">
+        <div class="small-6 columns">
+            <header >RushTracker</header>
+        </div>
+    </div>
     <div class="row">
-    <div class="small-12 columns">
-      <form class="signup-form">
-        <h2>Sign Up</h2>
-        <div class="error" style="display:none"></div>
-        <input type="text" id="signup-frat-name" placeholder="Organization Name" />
-        <input type="text" id="signup-username" placeholder="Username" />
-        <input type="password" id="signup-password" placeholder="Create a Password" />
-        <div class="text-center"><button>Sign Up</button></div>
-      </form>
+      <div class="small-12 columns">
+        <form class="signup-form">
+          <h2>Sign Up</h2>
+          <div class="error" style="display:none"></div>
+          <input type="text" id="signup-frat-name" placeholder="Organization Name" />
+          <input type="text" id="signup-username" placeholder="Username" />
+          <input type="password" id="signup-password" placeholder="Create a Password" />
+          <div class="text-center"><button>Sign Up</button></div>
+        </form>
       </div>
     </div>
   </script>
 
   <script type="text/template" id="member-signup-template">
-    <header id="header">RushTracker</header>
+    <div class="nav" id="header">
+        <div class="small-6 columns">
+            <header >RushTracker</header>
+        </div>
+    </div>
     <div class="row">
-    <div class="small-12 columns">
-      <form class="signup-form">
-        <h2><%= orgName %> Sign Up</h2>
-        <div class="error" style="display:none"></div>
-        <input type="text" id="signup-member-name" placeholder="Name" />
-        <input type="text" id="signup-username" placeholder="Username" />
-        <input type="password" id="signup-password" placeholder="Create a Password" />
-        <div class="text-center"><button>Sign Up</button></div>
-      </form>
+      <div class="small-12 columns">
+        <form class="signup-form">
+          <h2><%= orgName %> Sign Up</h2>
+          <div class="error" style="display:none"></div>
+          <input type="text" id="signup-member-name" placeholder="Name" />
+          <input type="text" id="signup-username" placeholder="Username" />
+          <input type="password" id="signup-password" placeholder="Create a Password" />
+          <div class="text-center"><button>Sign Up</button></div>
+        </form>
       </div>
     </div>
   </script>
@@ -176,7 +190,7 @@
     <% }); %>
 </script>
 
-  <script type="text/template" id="rush-list-template">
+  <script type="text/template" id="dashboard-template">
     <div class="contain-to-grid">  
       <div class="nav" id="header">
         <div class="small-6 columns">
@@ -193,8 +207,8 @@
     </div>
     <div class="row text-center">
       <ul class="button-group">
-        <li class="button secondary">DROPPED</li>
-        <li class="button">ACTIVE</li>
+        <li class="button secondary" id="dropped-button">DROPPED</li>
+        <li class="button" id="active-button">ACTIVE</li>
         <li class="button secondary">All</li>
       </ul>
     </div>
@@ -204,6 +218,10 @@
         <li class="button">All</li>
       </ul>
     </div>
+    <div id="rush-card-subview"></div>
+  </script>
+
+  <script type="text/template" id="rush-list-template">
     <% _.each(data, function(rushee){ %>
       <div class="rush-card" id="<%= rushee.id %>">
         <div class="row">
@@ -246,6 +264,11 @@
   </script>
 
   <script type="text/template" id="rush-profile-template">
+      <div class="nav" id="header">
+        <div class="small-6 columns">
+            <header >RushTracker</header>
+        </div>
+    </div>
     <div>
       <div class="row">
         <a href="/#/rushes"><- Back</a>

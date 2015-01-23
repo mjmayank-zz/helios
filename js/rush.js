@@ -20,7 +20,7 @@ $(function() {
             "blur input": "validate"
         },
 
-        el: ".content",
+        id: "form",
 
         variables: {
           "organization": [],
@@ -33,7 +33,7 @@ $(function() {
         // loading any preexisting todos that might be saved to Parse.
         initialize: function(orgid) {
             console.log("initialize register");
-
+            $(".content").html(this.el);
             _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "validate");
 
             // Main todo management template
@@ -181,12 +181,12 @@ $(function() {
             });
         },
         close: function() {
-            this.stream.stop();
-            // console.log("close form");
-            // _.each(this.subViews, function(view) {
-            //     view.remove();
-            // });
-            // this.remove();
+            this.stream && this.stream.stop();
+            console.log("close form");
+            _.each(this.subViews, function(view) {
+                view.remove();
+            });
+            this.remove();
         }
 
     });
@@ -328,7 +328,7 @@ $(function() {
             "click #talked": "talked"
         },
 
-        el: ".content",
+        id: "profile",
 
         variables: {
           "talked": [],
@@ -339,6 +339,7 @@ $(function() {
         initialize: function(rushid) {
             console.log(rushid);
             _.bindAll(this, "close", "talked");
+            $(".content").html(this.el);
             this.rushid = rushid;
             var form = Parse.Object.extend("Form");
             var query = new Parse.Query(form);
@@ -422,10 +423,11 @@ $(function() {
             "submit form.login-form": "logIn",
         },
 
-        el: ".content",
+        id: "login",
 
         initialize: function() {
             _.bindAll(this, "logIn", "close");
+            $(".content").html(this.el);
             this.render();
         },
 
@@ -466,93 +468,24 @@ $(function() {
 
     });
 
-    var DashboardView = Parse.View.extend({
+    var RushCardView = Parse.View.extend({
         events: {
-            "click .log-out": "logOut",
-            "click #download-csv": "downloadCSV",
             "click #drop": "drop",
             "click #talked": "talked",
-            "click #loadAll": "loadMore"
         },
 
-        el: ".content",
+        id: "rush-card-view",
 
         variables: {
             "array": [],
             "data":[]
         },
 
-        initialize: function() {
+        initialize: function(array) {
             _.bindAll(this, "drop", "close", "logOut", "downloadCSV", "talked", "loadMore");
-
-            // {email: "b@gmail.com",
-            //             fileurl: "http://files.parsetfss.com/483e5f02-671f-4596-9410-d4f5b27d06e9/tfss-e1317052-f8ba-4fb3-932e-1d2bea4542e6-myfile.png",
-            //             hometown: "Burke, VA",
-            //             name: "Burke Deutsch"}
-
             console.log("initialize rushes");
-            this.render(this.variables);
-            var form = Parse.Object.extend("Form");
+            this.render(array);
 
-            var pq = new Parse.Query(form);
-            pq.equalTo("organizations", Parse.User.current().get("organization"));
-            pq.find({
-              success: function(array){
-                console.log("org", array);
-              }
-            })
-
-            var notInactiveQuery = new Parse.Query(form);
-            notInactiveQuery.notEqualTo("status", "inactive");
-
-            var notNullQuery = new Parse.Query(form);
-            notNullQuery.doesNotExist("status");
-
-            var query = Parse.Query.or(notInactiveQuery, notNullQuery);
-            // var query = new Parse.Query(form);
-            query.equalTo("organizations", Parse.User.current().get("organization"));
-            query.descending("createdAt");
-            query.limit(1000);
-            var that = this;
-            query.find({
-                success: function(array) {
-                    // The object was retrieved successfully.
-                    that.variables["data"] = array;
-                    that.render(that.variables);
-                    for (obj in array) {
-                        // console.log(array[obj].get('talked'));
-                        if(array[obj].get('talked')){
-                          console.log("talked", array[obj].get('talked'));
-                        }
-                        if(array[obj].get('talked') && array[obj].get('talked').indexOf(Parse.User.current()) > -1){
-                          console.log("talked");
-                        }
-                        var status = array[obj].get("status");
-                        if (status == null || status != "inactive") {
-                            var dict = {};
-                            dict["name"] = array[obj].get("name");
-                            dict["id"] = array[obj].id;
-                            dict["email"] = array[obj].get("email");
-                            dict["hometown"] = array[obj].get("hometown");
-                            dict["highschool"] = array[obj].get("highschool");
-                            dict["phonenumber"] = array[obj].get("phonenumber");
-                            if (dict["phonenumber"].length == 10) {
-                                dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
-                            }
-                            dict["residence"] = array[obj].get("residence");
-                            dict["custom1"] = array[obj].get("custom1");
-                            dict["custom2"] = array[obj].get("custom2");
-                            dict["fileurl"] = array[obj].get("pic").url();
-                            that.variables["array"].push(dict);
-                        }
-                    }
-                },
-                error: function(object, error) {
-                    // The object was not retrieved successfully.
-                    // error is a Parse.Error with an error code and message.
-                    console.log("error");
-                }
-            });
         },
 
         downloadCSV: function() {
@@ -666,9 +599,10 @@ $(function() {
             delete this;
         },
 
-        render: function(variables) {
-            this.$el.html(_.template($("#rush-list-template").html(), variables));
+        render: function(array) {
+            this.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
             this.delegateEvents();
+            return this;
         },
 
         close: function() {
@@ -681,14 +615,145 @@ $(function() {
 
     });
 
+    var DashboardView = Parse.View.extend({
+        events: {
+            // "click .log-out": "logOut",
+            // "click #download-csv": "downloadCSV",
+            // "click #loadAll": "loadMore"
+            "click #dropped-button": "getDropped",
+            "click #active-button": "getActive",
+        },
+
+        id: "dashboard-view",
+
+        variables: {
+          "status": "active",
+          "array": []
+        },
+
+        initialize: function() {
+          $(".content").html(this.el);
+          this.render();
+
+          this.subView = new RushCardView();
+          this.$('#rush-card-subview').html(this.subView.el);
+          var test = this.getActive();
+          console.log(test);
+        },
+
+        getActive: function(){
+          if(this.variables["active"]){
+            this.subView.render(this.variables["active"]);
+            return this.variables["active"];
+          }
+          else{
+            var form = Parse.Object.extend("Form");
+
+            var notInactiveQuery = new Parse.Query(form);
+            notInactiveQuery.notEqualTo("status", "inactive");
+
+            var notNullQuery = new Parse.Query(form);
+            notNullQuery.doesNotExist("status");
+
+            var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+            // var query = new Parse.Query(form);
+            query.equalTo("organizations", Parse.User.current().get("organization"));
+            query.descending("createdAt");
+            query.limit(5);
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    that.variables["active"] = array;
+                    that.variables["data"] = array;
+                    // that.render(that.variables);
+                    that.subView.render(array);
+                    for (obj in array) {
+                        // console.log(array[obj].get('talked'));
+                        if(array[obj].get('talked')){
+                          console.log("talked", array[obj].get('talked'));
+                        }
+                        if(array[obj].get('talked') && array[obj].get('talked').indexOf(Parse.User.current()) > -1){
+                          console.log("talked");
+                        }
+                        var status = array[obj].get("status");
+                        if (status == null || status != "inactive") {
+                            var dict = {};
+                            dict["name"] = array[obj].get("name");
+                            dict["id"] = array[obj].id;
+                            dict["email"] = array[obj].get("email");
+                            dict["hometown"] = array[obj].get("hometown");
+                            dict["highschool"] = array[obj].get("highschool");
+                            dict["phonenumber"] = array[obj].get("phonenumber");
+                            if (dict["phonenumber"].length == 10) {
+                                dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+                            }
+                            dict["residence"] = array[obj].get("residence");
+                            dict["custom1"] = array[obj].get("custom1");
+                            dict["custom2"] = array[obj].get("custom2");
+                            dict["fileurl"] = array[obj].get("pic").url();
+                            that.variables["array"].push(dict);
+                        }
+                    }
+                    return array;
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
+          }
+        },
+
+        getDropped: function(){
+          if(this.variables["inactive"]){
+            this.subView.render(this.variables["inactive"]);
+          }
+          else{
+            var form = Parse.Object.extend("Form");
+
+            var query = new Parse.Query(form);
+            query.equalTo("status", "inactive");
+            query.equalTo("organizations", Parse.User.current().get("organization"));
+            query.descending("createdAt");
+            query.limit(5);
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    that.variables["inactive"] = array;
+                    // that.render(that.variables);
+                    that.subView.render(array);
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                }
+            });
+          }
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#dashboard-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        }
+    })
+
     var AppRouter = Parse.Router.extend({
         routes: {
-            "rushes": "rushes",
             "form": "form",
             "form/:orgid": "orgForm",
+
             "signup": "orgSignup",
             "signup/:orgid": "memberSignup",
+
+            "rushes": "rushes",
             "rushes/:rushid": "profile",
+
             "*path": "rushes"
         },
 
@@ -712,6 +777,16 @@ $(function() {
             this.loadView(new RegisterFormView(orgid));
         },
 
+        orgSignup: function() {
+            console.log("org signup");
+            this.loadView(new orgSignupView());
+        },
+
+        memberSignup: function(orgid) {
+            console.log("member signup")
+            this.loadView(new memberSignupView(orgid));
+        },
+
         rushes: function() {
             console.log("rushes");
             if (!this.checkCurrentUser()) {
@@ -723,19 +798,9 @@ $(function() {
             }
         },
 
-        orgSignup: function() {
-            console.log("org signup");
-            this.loadView(new orgSignupView());
-        },
-
-        memberSignup: function(orgid) {
-            console.log("member signup")
-            this.loadView(new memberSignupView(orgid));
-        },
-
         profile: function(rushid) {
             if (!this.checkCurrentUser()) {
-                console.log("initialize", this.view);
+                console.log("profile", this.view);
                 this.loadView(new LogInView());
             }
             else{
@@ -751,14 +816,14 @@ $(function() {
         },
 
         loadView: function(view) {
-            // this.view && (this.view.close ? this.view.close() : this.view.remove());
+            this.view && (this.view.close ? this.view.close() : this.view.remove());
             // this.view && this.view.remove();
             this.view = view;
         }
 
     });
 
-    var router = new AppRouter;
+    new AppRouter();
     // new AppView;
     Parse.history.start();
 });

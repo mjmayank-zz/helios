@@ -2,7 +2,7 @@ body{
   /*margin-top: 60px;*/
 }
 
-body, h1, h6{
+body, h1, h2, h6{
   font-family: 'Lato', 'san-serif';
 }
 
@@ -19,6 +19,12 @@ canvas{
   border: solid gray 1px;
   background-image: url('../images/prof_pic.jpg');
   background-size: cover;
+}
+
+button{
+  font-family: 'Lato';
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .button{
