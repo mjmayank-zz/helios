@@ -343,7 +343,8 @@ $(function() {
 
     var ProfileView = Parse.View.extend({
         events: {
-            "click #talked": "talked"
+            "click #talked": "talked",
+            "click #post-comment": "postComment"
         },
 
         id: "profile",
@@ -351,7 +352,8 @@ $(function() {
         variables: {
           "talked": [],
           "previous": "",
-          "next": ""
+          "next": "",
+          "comments": []
         },
 
         initialize: function(rushid) {
@@ -363,9 +365,8 @@ $(function() {
             var query = new Parse.Query(form);
             var that = this;
             query.get(rushid).then(
-                function(myObj) {
+                function(rushee) {
                     // The object was retrieved successfully.
-                    var rushee = myObj;
                     that.variables["rushee"] = rushee;
                     that.render();
 
@@ -383,6 +384,7 @@ $(function() {
                     var nextQuery = new Parse.Query(form);
                     nextQuery.limit(1);
                     nextQuery.greaterThan("createdAt", date);
+                    nextQuery.equalTo("organizations", Parse.User.current().get("organization"));
                     nextQuery.find(
                         function(array) {
                             if (array.length != 0) {
@@ -396,6 +398,7 @@ $(function() {
                     var prevQuery = new Parse.Query(form);
                     prevQuery.limit(1);
                     prevQuery.lessThan("createdAt", date);
+                    prevQuery.equalTo("organizations", Parse.User.current().get("organization"));
                     prevQuery.descending("createdAt");
                     prevQuery.find(
                         function(array) {
@@ -405,7 +408,18 @@ $(function() {
                                 that.variables["next"] = "/#/rushes/" + array[0].id;
                                 that.render();
                             }
-                        })
+                        });
+
+                    var comment = Parse.Object.extend("Comment");
+                    var commentsQuery = new Parse.Query(comment);
+                    commentsQuery.equalTo("about", rushee);
+                    commentsQuery.equalTo("org", Parse.User.current().get("organization"));
+                    commentsQuery.find(
+                      function(array) {
+                        that.variables["comments"] = array;
+                        console.log(array);
+                        that.render();
+                      });
                 },
                 function(object, error) {
                     // The object was not retrieved successfully.
@@ -419,6 +433,18 @@ $(function() {
             this.variables["rushee"].addUnique("talked", Parse.User.current());
             this.variables["rushee"].save();
             console.log("save");
+        },
+
+        postComment: function() {
+          console.log(this.$("#comment-textbox")[0].value);
+          var comment = Parse.Object.extend("Comment");
+          var obj = new comment();
+          obj.set("comment", this.$("#comment-textbox")[0].value);
+          obj.set("author", Parse.User.current());
+          obj.set("authorName", Parse.User.current().get("name"));
+          obj.set("about", this.variables["rushee"]);
+          obj.set("org", Parse.User.current().get("organization"));
+          obj.save();
         },
 
         render: function() {
@@ -500,36 +526,9 @@ $(function() {
         },
 
         initialize: function(array) {
-            _.bindAll(this, "drop", "close", "downloadCSV", "talked");
+            _.bindAll(this, "drop", "close", "talked");
             console.log("initialize rushes");
             this.render(array);
-        },
-
-        downloadCSV: function() {
-            console.log(this.variables);
-            var data = [];
-            for (var val in this.variables) {
-                for (var rushee in this.variables[val]) {
-                    var sing_val = []
-                    for (var key in this.variables[val][rushee]) {
-                        sing_val.push(this.variables[val][rushee][key]);
-                    }
-                    console.log(sing_val);
-                    data.push(sing_val);
-                }
-            }
-
-            console.log(data);
-
-            // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
-            var csvContent = "data:text/csv;charset=utf-8,";
-            data.forEach(function(infoArray, index) {
-                dataString = infoArray.join(",");
-                csvContent += dataString + "\n";
-            });
-
-            var encodedUri = encodeURI(csvContent);
-            window.open(encodedUri);
         },
 
         drop: function(e) {
@@ -581,7 +580,7 @@ $(function() {
     var DashboardView = Parse.View.extend({
         events: {
             "click .log-out": "logOut",
-            // "click #download-csv": "downloadCSV",
+            "click #download-csv": "downloadCSV",
             "click #loadAll": "loadMore",
             "click #dropped-button": "getDropped",
             "click #active-button": "getActive",
@@ -595,7 +594,7 @@ $(function() {
         },
 
         initialize: function() {
-          _.bindAll(this, "logOut", "loadMore")
+          _.bindAll(this, "logOut", "loadMore", "downloadCSV");
           $(".content").html(this.el);
           this.variables["orgid"] = Parse.User.current().get("organization").id;
           this.render();
@@ -630,8 +629,6 @@ $(function() {
                 success: function(array) {
                     // The object was retrieved successfully.
                     that.variables["active"] = array;
-                    that.variables["data"] = array;
-                    // that.render(that.variables);
                     that.subView.render(array);
                     for (obj in array) {
                         // console.log(array[obj].get('talked'));
@@ -733,6 +730,31 @@ $(function() {
                   console.log("error");
               }
           });
+        },
+
+        downloadCSV: function() {
+            console.log(this.variables["array"]);
+            var data = [];
+            for (var rushee in this.variables["array"]) {
+                var sing_val = []
+                for (var key in this.variables["array"][rushee]) {
+                    sing_val.push(this.variables["array"][rushee][key]);
+                }
+                console.log(sing_val);
+                data.push(sing_val);
+            }
+
+            console.log(data);
+
+            // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
+            var csvContent = "data:text/csv;charset=utf-8,";
+            data.forEach(function(infoArray, index) {
+                dataString = infoArray.join(",");
+                csvContent += dataString + "\n";
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
         },
 
         // Logs out the user and shows the login view

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>RushTracker</title>
   <link href='//fonts.googleapis.com/css?family=Josefin+Slab:700' rel='stylesheet' type='text/css'>
-  <link href='//fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="css/foundation-icons.css" />
   <link rel="stylesheet" href="css/foundation.css">
   <link href="css/gum.css" media="all" rel="stylesheet" type="text/css"/>
@@ -271,58 +271,90 @@
     </div>
     <div>
       <div class="row">
-        <a href="/#/rushes"><- Back</a>
-      </div>
-      <div class="row">
-        <div class="small-12 columns">
-          <h1><%= rushee.get("name") %></h1>
+        <div class="medium-2 columns">
+          <a href="/#/rushes">< BACK</a>
         </div>
-      </div>
-      <div class="row">
-        <div class="small-12 columns">
+        <div class="medium-8 columns end">
           <img src="<%= rushee.get('pic').url() %>">
         </div>
       </div>
-      <div class="row profile">
-        <div class="small-12 columns">
-          <div class="row">
-            Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
-          </div>
-          <div class="row">
-            <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
-          </div>
-          <div class="row">
-            <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
-          </div>
-          <div class="row">
-            <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
-          </div>
-          <div class="row">
-            <div class="question">
-              <%= Parse.User.current().escape("custom1") %>
-            </div>
-              <%= rushee.get('custom1') %>
-          </div>
-          <div class="row">
-            <div class="question">
-              <%= Parse.User.current().escape("custom2") %>
-            </div>
-              <%= rushee.get('custom2') %>
-          </div>
-          <div class="row">
-          <div class="question">
-          Has talked to:
-          </div>
-          <% _.each(talked, function(brother){ %>
-              <%= brother.get("name") %>,
-          <% }); %>
-        </div>
+      <div class="profile">
+      <div class="row">
+        <div class="small-12 medium-offset-2 medium-8 columns">
+          <span class="name-attribute"><%= rushee.get("name") %></span>
         </div>
       </div>
       <div class="row">
-      Comment:
-        <textarea rows="4" cols="50">
-        </textarea>
+        <div class="medium-offset-2 medium-8 columns">
+          Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-8 columns">
+            <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-8 columns">
+          <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-8 columns">
+            <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-4 columns">
+          <div class="question">
+            <%= Parse.User.current().escape("custom1") %>
+          </div>
+          <div>
+            <%= rushee.get('custom1') %>
+          </div>
+        </div>
+        <div class="medium-4 end columns">
+          <div class="question">
+              <%= Parse.User.current().escape("custom2") %>
+          </div>
+          <div>
+            <%= rushee.get('custom2') %>
+          </div>    
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-4 columns">
+          <div class="question">
+            Has talked to:
+          </div>
+          <% _.each(talked, function(brother){ %>
+            <div>
+              <%= brother.get("name") %>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-8 columns">
+          <div class="comments-section">
+
+            <% _.each(comments, function(comment){ %>
+              <div>
+                <span class="comment-author question"><%= comment.get("authorName") %></span>
+                <span class="comment-timestamp"><%= comment.createdAt %></span>
+              </div>
+              <div>
+                <%= comment.get("comment") %>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-offset-2 medium-8 columns">
+            <textarea id="comment-textbox" rows="4" placeholder="Comment"></textarea>
+            <a class="button right" id="post-comment">Post</a>
+        </div>
       </div>
       <div class="row text-center">
         <a id="talked" class="button">MET</a>

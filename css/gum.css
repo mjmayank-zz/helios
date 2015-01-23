@@ -141,18 +141,44 @@ header img{
   cursor: default;
 }
 
-.attribute{
+.name-attribute{
   font-weight: 900;
+  font-size: 1.75em;
+}
+
+.attribute{
+  font-weight: 700;
 }
 
 .profile{
-  font-size: 2em;
+  font-size: 1.5em;
+  font-weight: 300;
 }
 
 .profile .question{
-  font-size: .5em;
+  font-size: .75em;
   font-weight: 900;
   margin-top: 15px;
+}
+
+.comments-section{
+  border-left: 2px purple solid;
+  padding-left: 10px;
+  margin-top: 50px;
+}
+
+.comment-author{
+  text-transform: uppercase;
+}
+
+.comment-timestamp{
+  font-size: .5em;
+  font-weight: 300;
+}
+
+#comment-textbox{
+  margin-top: 10px;
+  margin-bottom: 0px;
 }
 
 @media screen and (min-width: 600px) {
