@@ -29,19 +29,21 @@
 
   <script type="text/template" id="login-template">
     <div class="nav" id="header">
-        <div class="small-6 columns">
+        <div class="small-12 columns">
             <header><img src="images/logo_small_alt.png"></header>
         </div>
     </div>
-    <div class="row">
-      <div class="small-12 columns">
-        <form class="login-form">
-          <h2>Log In</h2>
-          <div class="error" style="display:none"></div>
-          <input type="text" id="login-username" placeholder="Username" />
-          <input type="password" id="login-password" placeholder="Password" />
-          <div class="text-center"><button>Log In</button></div>
-        </form>
+    <div id="login-wrapper">
+      <div class="row">
+        <div class="small-offset-1 small-10 medium-offset-3 medium-6 columns">
+          <form class="login-form">
+            <h2>Log In</h2>
+            <div class="error" style="display:none"></div>
+            <input type="text" id="login-username" placeholder="Username" />
+            <input type="password" id="login-password" placeholder="Password" />
+            <div class="text-center"><button>Log In</button></div>
+          </form>
+        </div>
       </div>
     </div>
   </script>

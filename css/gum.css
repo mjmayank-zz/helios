@@ -64,6 +64,7 @@ header{
 
 header img{
   height: 50px;
+  width: 216px;
 }
 
 .camera{
@@ -179,6 +180,23 @@ header img{
 #comment-textbox{
   margin-top: 10px;
   margin-bottom: 0px;
+}
+
+#login-wrapper{
+  padding: 15% 0;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../images/login_background.jpg');
+  background-size: cover;
+}
+
+#login-wrapper h2{
+  color: white;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 @media screen and (min-width: 600px) {
