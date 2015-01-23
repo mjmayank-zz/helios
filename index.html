@@ -194,12 +194,12 @@
     <div class="contain-to-grid">  
       <div class="nav" id="header">
         <div class="small-6 columns">
-          <header >RushTracker</header>
+          <header><img src="images/logo_small_alt.png"></header>
         </div>
         <div class="small-6 columns">
           <ul class="right">
             <li><a id="download-csv">Get CSV</a></li>
-            <li><a href="/#/form">Back to Form</a></li>
+            <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
             <li><a href="#" class="log-out">Log out</a></li>
           </ul>
         </div>
@@ -219,6 +219,7 @@
       </ul>
     </div>
     <div id="rush-card-subview"></div>
+    <div class="text-center"><a id="loadAll" class="button">Load All</a></div>
   </script>
 
   <script type="text/template" id="rush-list-template">
@@ -260,7 +261,6 @@
         </div>
       </div>
       <% }); %>
-    <div class="text-center"><a id="loadAll" class="button">Load All</a></div>
   </script>
 
   <script type="text/template" id="rush-profile-template">

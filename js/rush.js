@@ -17,7 +17,7 @@ $(function() {
             "click #submit": "submit",
             "click #snap": "snap",
             "click #retake": "retake",
-            "blur input": "validate"
+            "blur input": "formBlur"
         },
 
         id: "form",
@@ -99,15 +99,34 @@ $(function() {
             console.error('Error on getUserMedia', error);
         },
 
-        validate: function(e) {
-            if (e.target.id === "phonenumber") {
-                e.target.value = e.target.value.replace(/\D/g, '');
-            } else if (e.target.id === "email") {
-                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                re.test(e.target.value);
-            }
+        formBlur: function(e){
+          this.validate(e.target)
         },
 
+        validate: function(target) {
+            if(target.id === "name"){
+              if(target.value === ""){
+                return false;
+              }
+            }
+            if(target.id === "phonenumber") {
+                target.value = e.target.value.replace(/\D/g, '');
+                if(target.value.length < 10){
+                  return false;
+                }
+            } else if (target.id === "email") {
+                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(target.value);
+            }
+            return true;
+        },
+
+        validateForm: function(){
+          var formdata = document.getElementById("info");
+          for(var index in formdata.elements){
+            console.log(formdata.elements[index]);
+          }
+        },
         // Re-rendering the App just means refreshing the statistics -- the rest
         // of the app doesn't change.
         render: function() {
@@ -134,6 +153,7 @@ $(function() {
         },
 
         submit: function(e) {
+            this.validateForm();
             console.log(video);
             if (this.$('#submit').hasClass("disabled")) {
                 return;
@@ -210,8 +230,6 @@ $(function() {
             var password = this.$("#signup-password").val();
 
             Parse.User.signUp(username, password, {
-                ACL: new Parse.ACL()
-            }, {
                 success: function(user) {
                     console.log("signup done");
                     var form = Parse.Object.extend("Organization");
@@ -482,10 +500,9 @@ $(function() {
         },
 
         initialize: function(array) {
-            _.bindAll(this, "drop", "close", "logOut", "downloadCSV", "talked", "loadMore");
+            _.bindAll(this, "drop", "close", "downloadCSV", "talked");
             console.log("initialize rushes");
             this.render(array);
-
         },
 
         downloadCSV: function() {
@@ -545,60 +562,6 @@ $(function() {
             }
         },
 
-        loadMore: function (e) {
-          console.log(e.target);
-          this.$('#loadAll').addClass("hide");
-          console.log("loadmore");
-          var that = this;
-          // we are starting a new load of results so set isLoading to true
-          this.isLoading = true;
-          // fetch is Backbone.js native function for calling and parsing the collection url
-          // this.twitterCollection.fetch({ 
-          //   success: function (tweets) {
-          //     // Once the results are returned lets populate our template
-          //     $(that.el).append(_.template(TwitterListTemplate, {tweets: tweets.models, _:_}));
-          //     // Now we have finished loading set isLoading back to false
-          //     that.isLoading = false;
-          //   }
-          // });
-          var form = Parse.Object.extend("Form");
-
-          var notInactiveQuery = new Parse.Query(form);
-          notInactiveQuery.notEqualTo("status", "inactive");
-
-          var notNullQuery = new Parse.Query(form);
-          notNullQuery.doesNotExist("status");
-
-          var query = Parse.Query.or(notInactiveQuery, notNullQuery);
-          query.descending("createdAt");
-          query.skip(5);
-          query.limit(1000);
-          var that = this;
-          query.find({
-              success: function(array) {
-                  // The object was retrieved successfully.
-                  console.log(that.variables["data"]);
-                  console.log(array);
-                  that.variables["data"] = that.variables["data"].concat(array);
-                  console.log(that.variables["data"]);
-                  that.render(that.variables);
-              },
-              error: function(object, error) {
-                  // The object was not retrieved successfully.
-                  // error is a Parse.Error with an error code and message.
-                  console.log("error");
-              }
-          });
-        },
-
-        // Logs out the user and shows the login view
-        logOut: function(e) {
-            Parse.User.logOut();
-            new LogInView();
-            this.undelegateEvents();
-            delete this;
-        },
-
         render: function(array) {
             this.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
             this.delegateEvents();
@@ -617,9 +580,9 @@ $(function() {
 
     var DashboardView = Parse.View.extend({
         events: {
-            // "click .log-out": "logOut",
+            "click .log-out": "logOut",
             // "click #download-csv": "downloadCSV",
-            // "click #loadAll": "loadMore"
+            "click #loadAll": "loadMore",
             "click #dropped-button": "getDropped",
             "click #active-button": "getActive",
         },
@@ -632,13 +595,15 @@ $(function() {
         },
 
         initialize: function() {
+          _.bindAll(this, "logOut", "loadMore")
           $(".content").html(this.el);
+          this.variables["orgid"] = Parse.User.current().get("organization").id;
           this.render();
 
           this.subView = new RushCardView();
           this.$('#rush-card-subview').html(this.subView.el);
           var test = this.getActive();
-          console.log(test);
+          console.log(this.$('#back-to-form'));
         },
 
         getActive: function(){
@@ -734,6 +699,48 @@ $(function() {
                 }
             });
           }
+        },
+
+        loadMore: function (e) {
+          console.log(e.target);
+          this.$('#loadAll').addClass("hide");
+          console.log("loadmore");
+
+          var form = Parse.Object.extend("Form");
+
+          var notInactiveQuery = new Parse.Query(form);
+          notInactiveQuery.notEqualTo("status", "inactive");
+
+          var notNullQuery = new Parse.Query(form);
+          notNullQuery.doesNotExist("status");
+
+          var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+          // var query = new Parse.Query(form);
+          query.equalTo("organizations", Parse.User.current().get("organization"));
+          query.descending("createdAt");
+          query.skip(5);
+          query.limit(1000);
+          var that = this;
+          query.find({
+              success: function(array) {
+                  // The object was retrieved successfully.
+                  that.variables["active"] = that.variables["active"].concat(array);
+                  that.subView.render(that.variables["active"]);
+              },
+              error: function(object, error) {
+                  // The object was not retrieved successfully.
+                  // error is a Parse.Error with an error code and message.
+                  console.log("error");
+              }
+          });
+        },
+
+        // Logs out the user and shows the login view
+        logOut: function(e) {
+            Parse.User.logOut();
+            new LogInView();
+            this.undelegateEvents();
+            delete this;
         },
 
         render: function() {

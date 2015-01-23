@@ -60,7 +60,10 @@ header{
   font-size: 40px;
   font-family: "Josefin Slab", "serif";
   font-weight: 900;
-  
+}
+
+header img{
+  height: 50px;
 }
 
 .camera{
@@ -85,13 +88,13 @@ header{
 }
 
 .contain-to-grid{
-  background-color: #0C8DE8;
+  background-color: #5846e2;
 }
 
 #header{
   height: 60px;
   line-height: 60px;
-  background-color: #0C8DE8;
+  background-color: #5846e2;
 /*  position: fixed;
   top: 0;
   left: 100px;*/
