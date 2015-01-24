@@ -63,8 +63,7 @@ header{
 }
 
 header img{
-  height: 50px;
-  width: 216px;
+  max-height: 50px;
 }
 
 .camera{
