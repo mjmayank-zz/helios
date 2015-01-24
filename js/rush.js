@@ -9,6 +9,58 @@ $(function() {
     // The Application
     // ---------------
 
+
+
+    var LogInView = Parse.View.extend({
+        events: {
+            "submit form.login-form": "logIn",
+        },
+
+        id: "login",
+
+        initialize: function() {
+            _.bindAll(this, "logIn", "close");
+            $(".content").html(this.el);
+            this.render();
+        },
+
+        logIn: function(e) {
+            var self = this;
+            var username = this.$("#login-username").val();
+            var password = this.$("#login-password").val();
+
+            Parse.User.logIn(username, password, {
+                success: function(user) {
+                    new RegisterFormView();
+                    self.undelegateEvents();
+                    delete self;
+                },
+
+                error: function(user, error) {
+                    self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
+                    self.$(".login-form button").removeAttr("disabled");
+                }
+            });
+
+            this.$(".login-form button").attr("disabled", "disabled");
+
+            return false;
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#login-template").html()));
+            this.delegateEvents();
+        },
+
+        close: function() {
+            _.each(this.subViews, function(view) {
+                view.remove();
+            });
+            this.remove();
+        }
+
+    });
+
     // The form view that lets a user manage their todo items
     var RegisterFormView = Parse.View.extend({
 
@@ -357,8 +409,8 @@ $(function() {
         },
 
         initialize: function(rushid) {
-            console.log(rushid);
-            _.bindAll(this, "close", "talked");
+            console.log(this.variables);
+            _.bindAll(this, "talked");
             $(".content").html(this.el);
             this.rushid = rushid;
             var form = Parse.Object.extend("Form");
@@ -371,11 +423,15 @@ $(function() {
                     that.render();
 
                     var talkedarr = rushee.get("talked");
+                    var temptalked = [];
                     for(var member in talkedarr){
                       talkedarr[member].fetch({
                         success: function(myObj){
-                            that.variables["talked"].push(myObj);
-                            that.render();
+                            temptalked.push(myObj);
+                            if(temptalked.length == talkedarr.length){
+                              that.variables["talked"] = temptalked;
+                              that.render();
+                            }
                         }
                       });
                     }
@@ -389,9 +445,8 @@ $(function() {
                         function(array) {
                             if (array.length != 0) {
                                 // The object was retrieved successfully.
-                                console.log("next", array);
                                 that.variables["previous"] = "/#/rushes/" + array[0].id;
-                                that.render()
+                                that.render();
                             }
                         });
 
@@ -404,7 +459,6 @@ $(function() {
                         function(array) {
                             if (array.length != 0) {
                                 // The object was retrieved successfully.
-                                console.log("prev", array);
                                 that.variables["next"] = "/#/rushes/" + array[0].id;
                                 that.render();
                             }
@@ -417,7 +471,6 @@ $(function() {
                     commentsQuery.find(
                       function(array) {
                         that.variables["comments"] = array;
-                        console.log(array);
                         that.render();
                       });
                 },
@@ -436,7 +489,10 @@ $(function() {
         },
 
         postComment: function() {
-          console.log(this.$("#comment-textbox")[0].value);
+          if(this.$("#comment-textbox")[0].value === ""){
+            console.log("do nothing");
+            return;
+          }
           var comment = Parse.Object.extend("Comment");
           var obj = new comment();
           obj.set("comment", this.$("#comment-textbox")[0].value);
@@ -444,7 +500,11 @@ $(function() {
           obj.set("authorName", Parse.User.current().get("name"));
           obj.set("about", this.variables["rushee"]);
           obj.set("org", Parse.User.current().get("organization"));
-          obj.save();
+          var that = this;
+          obj.save().then(function(){
+            console.log("saved");
+            that.$("#comment-textbox")[0].value = "";
+            });
         },
 
         render: function() {
@@ -453,57 +513,10 @@ $(function() {
         },
 
         close: function() {
-            _.each(this.subViews, function(view) {
-                view.remove();
-            });
-            this.remove();
-        }
-
-    });
-
-
-    var LogInView = Parse.View.extend({
-        events: {
-            "submit form.login-form": "logIn",
-        },
-
-        id: "login",
-
-        initialize: function() {
-            _.bindAll(this, "logIn", "close");
-            $(".content").html(this.el);
-            this.render();
-        },
-
-        logIn: function(e) {
-            var self = this;
-            var username = this.$("#login-username").val();
-            var password = this.$("#login-password").val();
-
-            Parse.User.logIn(username, password, {
-                success: function(user) {
-                    new RegisterFormView();
-                    self.undelegateEvents();
-                    delete self;
-                },
-
-                error: function(user, error) {
-                    self.$(".login-form .error").html("Invalid username or password. Please try again.").show();
-                    self.$(".login-form button").removeAttr("disabled");
-                }
-            });
-
-            this.$(".login-form button").attr("disabled", "disabled");
-
-            return false;
-        },
-
-        render: function() {
-            this.$el.html(_.template($("#login-template").html()));
-            this.delegateEvents();
-        },
-
-        close: function() {
+            console.log("close profile view");
+            console.log("before", this.variables);
+            this.variables = undefined;
+            console.log("after", this.variables);
             _.each(this.subViews, function(view) {
                 view.remove();
             });
@@ -602,7 +615,6 @@ $(function() {
           this.subView = new RushCardView();
           this.$('#rush-card-subview').html(this.subView.el);
           var test = this.getActive();
-          console.log(this.$('#back-to-form'));
         },
 
         getActive: function(){
@@ -632,12 +644,6 @@ $(function() {
                     that.subView.render(array);
                     for (obj in array) {
                         // console.log(array[obj].get('talked'));
-                        if(array[obj].get('talked')){
-                          console.log("talked", array[obj].get('talked'));
-                        }
-                        if(array[obj].get('talked') && array[obj].get('talked').indexOf(Parse.User.current()) > -1){
-                          console.log("talked");
-                        }
                         var status = array[obj].get("status");
                         if (status == null || status != "inactive") {
                             var dict = {};
@@ -817,22 +823,21 @@ $(function() {
         },
 
         rushes: function() {
-            console.log("rushes");
             if (!this.checkCurrentUser()) {
-                console.log("initialize", this.view);
                 this.loadView(new LogInView());
             }
             else{
+              console.log("rushes");
               this.loadView(new DashboardView());
             }
         },
 
         profile: function(rushid) {
             if (!this.checkCurrentUser()) {
-                console.log("profile", this.view);
                 this.loadView(new LogInView());
             }
             else{
+              console.log("profile");
               this.loadView(new ProfileView(rushid));
             }
         },

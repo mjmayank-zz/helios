@@ -143,6 +143,10 @@ header img{
   text-transform: uppercase;
 }
 
+.comment:not(:first-child){
+  margin-top: 15px;
+}
+
 .comment-timestamp{
   font-size: .5em;
   font-weight: 300;

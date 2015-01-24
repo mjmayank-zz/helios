@@ -196,10 +196,10 @@
   <script type="text/template" id="dashboard-template">
     <div class="contain-to-grid">  
       <div class="nav" id="header">
-        <div class="small-6 columns">
+        <div class="small-8 medium-4 columns">
           <header><img src="images/logo_small_alt.png"></header>
         </div>
-        <div class="small-6 columns">
+        <div class="small-4 medium-8 columns show-for-medium-up">
           <ul class="right">
             <li><a id="download-csv">Get CSV</a></li>
             <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
@@ -340,14 +340,15 @@
       <div class="row">
         <div class="medium-offset-2 medium-8 columns">
           <div class="comments-section">
-
             <% _.each(comments, function(comment){ %>
-              <div>
-                <span class="comment-author question"><%= comment.get("authorName") %></span>
-                <span class="comment-timestamp"><%= comment.createdAt %></span>
-              </div>
-              <div>
-                <%= comment.get("comment") %>
+              <div class="comment">
+                <div>
+                  <span class="comment-author question"><%= comment.get("authorName") %></span>
+                  <span class="comment-timestamp"><%= comment.createdAt %></span>
+                </div>
+                <div>
+                  <%= comment.get("comment") %>
+                </div>
               </div>
             <% }); %>
           </div>
