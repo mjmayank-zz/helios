@@ -20,10 +20,7 @@
 
   <!-- Todo App Interface -->
 
-  <div id="rushsignup">
-    <div class="content">
-      <div id="test"></div>
-    </div>
+  <div class="content">
   </div>
 
   <!-- Templates -->
@@ -250,12 +247,19 @@
                 <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
               </div>
             </div>
-            <div>
-              <%= Parse.User.current().escape("custom1") %> <span class="attribute"><%= rushee.get('custom1') %></span>
-            </div>
-            <div>
-              <%= Parse.User.current().escape("custom2") %> <span class="attribute"><%= rushee.get('custom2') %></span>
-            </div>
+          <% if (rushee["comment"] != undefined) { %>
+          <div class="row comments-section">
+              <div class="medium-12 columns comment">
+                <div>
+                  <span class="comment-author question"><%= rushee["comment"].get("authorName") %></span>
+                  <span class="comment-timestamp"><%= rushee["comment"].createdAt %></span>
+                </div>
+                <div>
+                  <%= rushee["comment"].get("comment") %>
+                </div>
+              </div>
+          </div>
+          <% } %>
           </div>
           <div class="small-12 small-text-center medium-2 columns">
             <a id="talked" class="button">MET</a>
@@ -307,24 +311,24 @@
             <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
         </div>
       </div>
-      <div class="row">
-        <div class="medium-offset-2 medium-4 columns">
-          <div class="question">
-            <%= Parse.User.current().escape("custom1") %>
+      <% for(var index = 0; index < rushee.get('customQuestions').length; index++){ %>
+        <% if(index % 2 == 0) { %>
+          <div class="row">
+            <div class="medium-offset-2 medium-4 columns">
+        <% } else { %>
+            <div class="medium-4 end columns">
+        <% } %>
+              <div class="question">
+                <%= Parse.User.current().escape("custom1") %>
+              </div>
+              <div>
+                <%= rushee.get('customQuestions')[index] %>
+              </div>
+            </div>
+        <% if(index % 2 == 1 || index == rushee.get('customQuestions').length-1) { %>
           </div>
-          <div>
-            <%= rushee.get('custom1') %>
-          </div>
-        </div>
-        <div class="medium-4 end columns">
-          <div class="question">
-              <%= Parse.User.current().escape("custom2") %>
-          </div>
-          <div>
-            <%= rushee.get('custom2') %>
-          </div>    
-        </div>
-      </div>
+        <% } %>
+      <% } %>
       <div class="row">
         <div class="medium-offset-2 medium-4 columns">
           <div class="question">

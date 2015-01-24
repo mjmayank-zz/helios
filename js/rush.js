@@ -438,29 +438,27 @@ $(function() {
 
                     var date = new Date(rushee.createdAt);
                     var nextQuery = new Parse.Query(form);
-                    nextQuery.limit(1);
                     nextQuery.greaterThan("createdAt", date);
                     nextQuery.equalTo("organizations", Parse.User.current().get("organization"));
-                    nextQuery.find(
-                        function(array) {
-                            if (array.length != 0) {
-                                // The object was retrieved successfully.
-                                that.variables["previous"] = "/#/rushes/" + array[0].id;
-                                that.render();
+                    nextQuery.first(
+                        function(myObj) {
+                            if(myObj){
+                              // The object was retrieved successfully.
+                              that.variables["previous"] = "/#/rushes/" + myObj.id;
+                              that.render();
                             }
                         });
 
                     var prevQuery = new Parse.Query(form);
-                    prevQuery.limit(1);
                     prevQuery.lessThan("createdAt", date);
                     prevQuery.equalTo("organizations", Parse.User.current().get("organization"));
                     prevQuery.descending("createdAt");
-                    prevQuery.find(
-                        function(array) {
-                            if (array.length != 0) {
-                                // The object was retrieved successfully.
-                                that.variables["next"] = "/#/rushes/" + array[0].id;
-                                that.render();
+                    prevQuery.first(
+                        function(myObj) {
+                            if(myObj){
+                              // The object was retrieved successfully.
+                              that.variables["next"] = "/#/rushes/" + myObj.id;
+                              that.render();
                             }
                         });
 
@@ -514,9 +512,6 @@ $(function() {
 
         close: function() {
             console.log("close profile view");
-            console.log("before", this.variables);
-            this.variables = undefined;
-            console.log("after", this.variables);
             _.each(this.subViews, function(view) {
                 view.remove();
             });
@@ -575,9 +570,29 @@ $(function() {
         },
 
         render: function(array) {
-            this.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
-            this.delegateEvents();
-            return this;
+            var promises = [];
+              _.each(array, function(rush){
+                var comment = Parse.Object.extend("Comment");
+                var commentsQuery = new Parse.Query(comment);
+                commentsQuery.equalTo("about", rush);
+                commentsQuery.equalTo("org", Parse.User.current().get("organization"));
+                commentsQuery.descending("createdAt");
+                promises.push(commentsQuery.first(
+                  function(myObj) {
+                    // console.log(myObj);
+                    rush["comment"] = myObj;
+                  }));
+              });
+            var that = this
+            Parse.Promise.when(promises).then(
+              function(){
+                if(array){
+                 console.log("comments",  array[0]["comment"]);
+              }
+                that.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
+                that.delegateEvents();
+                return that;
+            });
         },
 
         close: function() {
