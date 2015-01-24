@@ -111,36 +111,7 @@ header img{
   margin-left: 15px;
 }
 
-.nav ul {
-  list-style: none;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-}
 
-.nav li {
-  font-size: 1.2em;
-  line-height: 60px;
-  height: 60px;
-  border-bottom: 1px solid #888;
-}
- 
-.nav a {
-  text-decoration: none;
-  color: #fff;
-  display: block;
-  transition: .3s background-color;
-}
- 
-.nav li:hover {
-  background-color: #0374E8;
-}
- 
-.nav a.active {
-  background-color: #fff;
-  color: #444;
-  cursor: default;
-}
 
 .name-attribute{
   font-weight: 900;
@@ -197,6 +168,37 @@ header img{
   color: white;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.nav ul {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.nav li {
+  font-size: 1.2em;
+  line-height: 60px;
+  height: 60px;
+  border-bottom: 1px solid #888;
+}
+ 
+.nav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: .3s background-color;
+}
+ 
+.nav li:hover {
+  background-color: #0374E8;
+}
+ 
+.nav a.active {
+  background-color: #fff;
+  color: #444;
+  cursor: default;
 }
 
 @media screen and (min-width: 600px) {
