@@ -627,6 +627,8 @@ $(function() {
           this.variables["orgid"] = Parse.User.current().get("organization").id;
           this.render();
 
+          var nav = responsiveNav(".nav-collapse");
+
           this.subView = new RushCardView();
           this.$('#rush-card-subview').html(this.subView.el);
           var test = this.getActive();
