@@ -867,6 +867,7 @@ $(function() {
 
         checkCurrentUser: function() {
             if (Parse.User.current()) {
+                Parse.User.current().fetch();
                 return true;
             }
             return false;

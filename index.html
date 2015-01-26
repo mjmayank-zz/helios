@@ -79,10 +79,15 @@
       <div class="small-12 columns">
         <form class="signup-form">
           <h2><%= orgName %> Sign Up</h2>
+          <% if(Parse.User.current()){ %>
+            <div>Send this link to invite fellow members to the app, but keep it private within your organization</div>
+          <% } else { %>
+            <div>Helios is an app for organizations to keep track of their recruits. Sign up to view, vote, and comment</div>
+          <% } %>
           <div class="error" style="display:none"></div>
-          <input type="text" id="signup-member-name" placeholder="Name" />
-          <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Username" />
-          <input type="password" id="signup-password" placeholder="Create a Password" />
+          <input type="text" id="signup-member-name" placeholder="Your name" />
+          <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Choose a username" />
+          <input type="password" id="signup-password" placeholder="Create a password" />
           <div class="text-center"><button>Sign Up</button></div>
         </form>
       </div>
@@ -219,6 +224,7 @@
       </div>
       <div class="small-4 medium-8 columns show-for-medium-up">
         <ul class="right">
+          <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
           <li><a id="download-csv">Get CSV</a></li>
           <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
           <li><a href="#" class="log-out">Log out</a></li>
@@ -230,6 +236,7 @@
       <img src="images/logo_small_alt.png">
       <nav class="nav nav-collapse">
         <ul>
+          <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
           <li><a id="download-csv">Get CSV</a></li>
           <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
           <li><a href="#" class="log-out">Log out</a></li>
