@@ -91,7 +91,6 @@ $(function() {
             // Main todo management template
 
             this.picTaken = null;
-            this.render();
             var that = this;
             $(document).foundation();
 
@@ -101,6 +100,7 @@ $(function() {
                         that.variables["organization"] = myObj;
                         that.variables["orgName"] = myObj.get("name");
                         that.variables["formQuestions"] = myObj.get("formQuestions");
+                        that.render();
                         this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
                     }
                 });
@@ -112,6 +112,7 @@ $(function() {
                     that.variables["organization"] = myObj;
                     that.variables["orgName"] = myObj.get("name");
                     that.variables["formQuestions"] = myObj.get("formQuestions");
+                    that.render();
                     this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
                 });
             }
