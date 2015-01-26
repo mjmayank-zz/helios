@@ -306,15 +306,15 @@
                 <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
               </div>
             </div>
-          <% if (rushee["comment"] != undefined) { %>
+          <% if (comment != undefined) { %>
           <div class="row comments-section">
               <div class="medium-12 columns comment">
                 <div>
-                  <span class="comment-author question"><%= rushee["comment"].get("authorName") %></span>
-                  <span class="comment-timestamp"><%= rushee["comment"].createdAt %></span>
+                  <span class="comment-author question"><%= comment.get("authorName") %></span>
+                  <span class="comment-timestamp"><%= comment.createdAt %></span>
                 </div>
                 <div>
-                  <%= rushee["comment"].get("comment") %>
+                  <%= comment.get("comment") %>
                 </div>
               </div>
           </div>
