@@ -242,9 +242,10 @@ $(function() {
             "submit form.signup-form": "signUp"
         },
 
-        el: ".content",
+        id: "org-signup",
 
         initialize: function() {
+            $(".content").html(this.el);
             _.bindAll(this, "signUp");
             this.render();
         },
@@ -294,13 +295,14 @@ $(function() {
             "submit form.signup-form": "signUp"
         },
 
-        el: ".content",
+        id: "member-signup",
 
         variables: {
 
         },
 
         initialize: function(orgid) {
+            $(".content").html(this.el);
             _.bindAll(this, "signUp");
 
             this.orgid = orgid;
