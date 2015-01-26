@@ -66,10 +66,10 @@ $(function() {
 
         // Delegated events for creating new items, and clearing completed ones.
         events: {
-            "click #submit": "submit",
+            "valid.fndtn.abide": "submit",
             "click #snap": "snap",
             "click #retake": "retake",
-            "blur input": "formBlur"
+            // "blur input": "formBlur"
         },
 
         id: "form",
@@ -93,6 +93,7 @@ $(function() {
             this.picTaken = null;
             this.render();
             var that = this;
+            $(document).foundation();
 
             if(orgid == null){
               Parse.User.current().get("organization").fetch({
@@ -205,7 +206,10 @@ $(function() {
         },
 
         submit: function(e) {
-            this.validateForm();
+            // this.validateForm();
+            if(e.namespace != 'abide.fndtn') {
+              return;
+            }
             console.log(video);
             if (this.$('#submit').hasClass("disabled")) {
                 return;
@@ -520,13 +524,9 @@ $(function() {
 
     });
 
-    var RushCardView = Parse.View.extend({
-        events: {
-            "click #drop": "drop",
-            "click #talked": "talked",
-        },
+    var RushCardListView = Parse.View.extend({
 
-        id: "rush-card-view",
+        id: "rush-card-list",
 
         variables: {
             "array": [],
@@ -534,65 +534,21 @@ $(function() {
         },
 
         initialize: function(array) {
-            _.bindAll(this, "drop", "close", "talked");
+            _.bindAll(this, "close");
             console.log("initialize rushes");
             this.render(array);
         },
 
-        drop: function(e) {
-            var confirm = window.confirm("Are you sure you want to drop him?");
-            if (confirm == true) {
-                // console.log(e.target.parentNode.parentNode.parentNode.id);
-                var id = e.target.parentNode.parentNode.parentNode.id;
-                for(var rushIndex in this.variables["data"]){
-                  var rush = this.variables["data"][rushIndex]
-                  if(rush.id === id){
-                      console.log(array[0]);
-                      array[0].set("status", "inactive");
-                      array[0].save();
-                      console.log("drop saved");
-                  }
-                }
-            }
-        },
-
-        talked: function(e) {
-            var id = e.target.parentNode.parentNode.parentNode.id;
-            for(var rushIndex in this.variables["data"]){
-              var rush = this.variables["data"][rushIndex]
-              if(rush.id === id){
-                rush.addUnique("talked", Parse.User.current());
-                rush.save();
-                console.log("met saved");
-                break;
-              }
-            }
-        },
-
         render: function(array) {
-            var promises = [];
-              _.each(array, function(rush){
-                var comment = Parse.Object.extend("Comment");
-                var commentsQuery = new Parse.Query(comment);
-                commentsQuery.equalTo("about", rush);
-                commentsQuery.equalTo("org", Parse.User.current().get("organization"));
-                commentsQuery.descending("createdAt");
-                promises.push(commentsQuery.first(
-                  function(myObj) {
-                    // console.log(myObj);
-                    rush["comment"] = myObj;
-                  }));
-              });
-            var that = this
-            Parse.Promise.when(promises).then(
-              function(){
-                if(array){
-                 console.log("comments",  array[0]["comment"]);
-              }
-                that.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
-                that.delegateEvents();
-                return that;
+            this.$el.html(_.template($("#rush-list-template").html(), {"data": array}));
+            this.delegateEvents();
+
+            _.each(array, function(rushee){
+              var rushCard = new RushCardView(rushee);
+              this.$('#' + rushee.id).html(rushCard.el);
             });
+
+            return this;
         },
 
         close: function() {
@@ -604,6 +560,56 @@ $(function() {
         }
 
     });
+
+    var RushCardView = Parse.View.extend({
+        events: {
+            "click #drop": "drop",
+            "click #talked": "talked",
+        },
+
+        id: "rush-card",
+
+        initialize: function(rush){
+            this.variables = {};
+            this.variables["rushee"] = rush;
+            var comment = Parse.Object.extend("Comment");
+            var commentsQuery = new Parse.Query(comment);
+            commentsQuery.equalTo("about", rush);
+            commentsQuery.equalTo("org", Parse.User.current().get("organization"));
+            commentsQuery.descending("createdAt");
+            var that = this
+            commentsQuery.first(
+              function(myObj) {
+                // console.log(myObj);
+                that.variables["comment"] = myObj;
+                that.render();
+              });
+        },
+
+        drop: function(e) {
+            var confirm = window.confirm("Are you sure you want to drop him?");
+            if (confirm == true) {
+                  this.variables["rushee"].set("status", "inactive");
+                  this.variables["rushee"].save();
+                  console.log("drop saved");
+            }
+        },
+
+        talked: function(e) {
+            this.variables["rushee"].addUnique("talked", Parse.User.current());
+            this.variables["rushee"].save();
+            console.log("met saved");
+        },
+
+        render: function(array) {
+            this.$el.html(_.template($("#rush-card-template").html(), this.variables));
+            this.delegateEvents();
+
+            $(document).foundation('equalizer', 'reflow');
+            return this;
+        }
+
+    })
 
     var DashboardView = Parse.View.extend({
         events: {
@@ -629,7 +635,7 @@ $(function() {
 
           var nav = responsiveNav(".nav-collapse");
 
-          this.subView = new RushCardView();
+          this.subView = new RushCardListView();
           this.$('#rush-card-subview').html(this.subView.el);
           var test = this.getActive();
         },

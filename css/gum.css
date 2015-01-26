@@ -2,6 +2,14 @@ body{
   /*margin-top: 60px;*/
 }
 
+a{
+  color: #3F32A2;
+}
+
+a:hover{
+  color: #5D4AEF;
+}
+
 body, h1, h2, h6{
   font-family: 'Lato', 'san-serif';
 }
@@ -27,10 +35,50 @@ button{
   text-transform: uppercase;
 }
 
+button:hover{
+  background-color: #3F32A2;
+}
+
+@media only screen and (min-width: 40.063em) { 
+  .card-pic{
+    height: 185px;
+    overflow: hidden;
+  }
+  .card-pic img{
+    max-height: 100%;
+    max-width: none;
+  }
+}
+
 .button{
   font-family: 'Lato';
   font-weight: 900;
   text-transform: uppercase;
+  background-color: #5846e2;
+}
+
+.button:hover{
+  background-color: #3F32A2;
+}
+
+.search{
+  display: inline-block!important;
+  height: 36px;
+  margin-top: 5px;
+  margin-bottom: 16px;
+  background-color: #5846e2;
+}
+
+button.search{
+    margin-left: -5px;
+    height: 38px;
+    line-height: 36px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.search.field{
+  width: 50%!important;
 }
 
 video,
@@ -83,7 +131,7 @@ header img{
 
 @media only screen and (min-width: 40.063em) { 
   .drop{
-    margin-top: 66px;
+    margin-top: 41px;
   }
 }
 
@@ -109,8 +157,6 @@ header img{
 .contact-method:not(:first-child){
   margin-left: 15px;
 }
-
-
 
 .name-attribute{
   font-weight: 900;
@@ -185,17 +231,24 @@ header img{
   line-height: 60px;
   height: 60px;
   border-bottom: 1px solid #888;
+  -webkit-transition:background-color .3s;
+  transition:background-color .3s;
 }
  
 .nav a {
   text-decoration: none;
   color: #fff;
   display: block;
-  transition: .3s background-color;
+  -webkit-transition: .3s color;
+  transition: .3s color;
 }
  
 .nav li:hover {
-  background-color: #0374E8;
+  background-color: white!important;
+}
+
+.nav a:hover{
+  color: #5846e2!important;
 }
  
 .nav a.active {
@@ -221,6 +274,19 @@ header img{
   /*display: block;*/
   background: #5846e2 url("../images/menu.png") no-repeat 50% 33%;
   background-size: cover;
+}
+
+.inline-block{
+  display: inline-block;
+}
+
+.vote{
+  font-size: 2em;
+  color: #bbbbbb;
+}
+
+.votes{
+  line-height: 2;
 }
 
 @media screen and (min-width: 600px) {

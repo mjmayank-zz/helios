@@ -14,6 +14,7 @@
   <script src="js/underscore.js"></script>
   <script src="//www.parsecdn.com/js/parse-1.2.13.min.js"></script>
   <script src="js/rush.js"></script>
+  <script src="/js/vendor/modernizr.js"></script>
   <link rel="stylesheet" href="css/responsive-nav.css">
 
 </head>
@@ -88,6 +89,15 @@
     </div>
   </script>
 
+
+
+
+
+
+
+
+
+
   <script type="text/template" id="register-form-template">
       <div class="nav" id="header">
           <div class="small-8 columns">
@@ -104,29 +114,41 @@
               <h1><%= orgName %> Rush Signup</h1>
           </div>
       </div>
-      <form id="info">
+      <form id="info" data-abide="ajax">
           <div class="row">
-              <div class="small-12 large-8 large-offset-2 columns">
+              <div class="small-12 medium-8 medium-offset-2 columns">
                   <label>
                   Name:
-                  <input type="text" id="name" placeholder="Name" />
+                  <input type="text" id="name" placeholder="Name" required/>
                   </label>
+                  <small class="error">Required</small>
               </div>
           </div>
           <div class="row">
               <div class="small-12 medium-8 medium-offset-2 columns">
                   <label>
                   Email:
-                  <input type="text" class="required" id="email" placeholder="Email" />
+                  <input type="email" class="required" id="email" placeholder="Email" required/>
                   </label>
+                  <small class="error">Required. Must be an email</small>
+              </div>
+          </div>
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <label>
+                  Phone Number:
+                  <input type="text" class="required" id="phonenumber" placeholder="Phone Number" required/>
+                  </label>
+                  <small class="error">Required</small>
               </div>
           </div>
           <div class="row">
               <div class="small-12 medium-8 medium-offset-2 columns">
                   <label>
                   Hometown, State:
-                  <input type="text" class="required" id="hometown" placeholder="Hometown" />
+                  <input type="text" class="required" id="hometown" placeholder="Hometown"/>
                   </label>
+                  <small class="error">Required</small>
               </div>
           </div>
           <div class="row">
@@ -145,17 +167,8 @@
                   </label>
               </div>
           </div>
-          <div class="row">
-              <div class="small-12 medium-8 medium-offset-2 columns">
-                  <label>
-                  Phone Number:
-                  <input type="text" class="required" id="phonenumber" placeholder="Phone Number" />
-                  </label>
-              </div>
-          </div>
           <div id="custom-questions">
           </div>
-      </form>
       <div id="video-div" class="row text-center">
           <div class="small-12 columns">
               <video id="video" muted loop autoplay></video>
@@ -174,9 +187,10 @@
       </div>
       <div class="row text-center">
           <div class="medium-12 columns">
-              <a href="/#/form" class="button success" id="submit">SUBMIT</a>
+              <button type="submit" class="button success" id="submit">SUBMIT</a>
           </div>
       </div>
+      </form>
   </script>
 
   <script type="text/template" id="form-custom-questions">
@@ -192,30 +206,36 @@
     <% }); %>
 </script>
 
+
+
+
+
+
+
   <script type="text/template" id="dashboard-template">
     <div class="nav show-for-medium-up" id="header">
-        <div class="small-8 medium-4 columns">
-          <header><img src="images/logo_small_alt.png"></header>
-        </div>
-        <div class="small-4 medium-8 columns show-for-medium-up">
-          <ul class="right">
-            <li><a id="download-csv">Get CSV</a></li>
-            <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
-            <li><a href="#" class="log-out">Log out</a></li>
-          </ul>
-        </div>
+      <div class="small-8 medium-4 columns">
+        <header><img src="images/logo_small_alt.png"></header>
       </div>
+      <div class="small-4 medium-8 columns show-for-medium-up">
+        <ul class="right">
+          <li><a id="download-csv">Get CSV</a></li>
+          <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
+          <li><a href="#" class="log-out">Log out</a></li>
+        </ul>
+      </div>
+    </div>
 
-<div class="row nav-mobile-container hide-for-medium-up">
-  <img src="images/logo_small_alt.png">
-  <nav class="nav nav-collapse">
-          <ul>
-            <li><a id="download-csv">Get CSV</a></li>
-            <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
-            <li><a href="#" class="log-out">Log out</a></li>
-          </ul>
-    </nav>
-</div>
+    <div class="row nav-mobile-container hide-for-medium-up">
+      <img src="images/logo_small_alt.png">
+      <nav class="nav nav-collapse">
+        <ul>
+          <li><a id="download-csv">Get CSV</a></li>
+          <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
+          <li><a href="#" class="log-out">Log out</a></li>
+        </ul>
+      </nav>
+    </div>
 
     <div class="row text-center">
       <ul class="button-group">
@@ -230,21 +250,48 @@
         <li class="button">All</li>
       </ul>
     </div>
+    <div class="row text-center">
+      <div class="small-12 medium-offset-2 medium-8 columns">
+        <input class="search field" type="text" placeholder="Search">
+        <button class="search">Search</button>
+      </div>
+    </div>
     <div id="rush-card-subview"></div>
     <div class="text-center"><a id="loadAll" class="button">Load All</a></div>
   </script>
 
+
+
+
+
+
+
+
   <script type="text/template" id="rush-list-template">
     <% _.each(data, function(rushee){ %>
       <div class="rush-card" id="<%= rushee.id %>">
+      </div>
+    <% }); %>
+  </script>
+
+
+  <script type="text/template" id="rush-card-template">
+      
         <div class="row">
-          <div class="medium-3 columns">
-            <img src="<%= rushee.get('pic').url() %>">
+          <div class="medium-3 columns card-pic text-center">
+            <a href="/#/rushes/<%= rushee.id %>"><img src="<%= rushee.get('pic').url() %>"></a>
           </div>
           <div class="medium-7 columns">
+            <div class="row" data-equalizer>
+              <div class="small-8 column" data-equalizer-watch>
+                <h1 class="inline-block"><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
+              </div>
+              <div class="small-4 column votes" data-equalizer-watch>
+                <i class="fi-arrow-up vote"></i> 0 <i class="fi-arrow-down vote"></i> 0
+              </div>
+            </div>
             <div class="row">
               <div class="medium-12 column">
-                <h1><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
                 Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
               </div>
             </div>
@@ -278,9 +325,11 @@
             <a class="button alert drop" id="drop">DROP</a>
           </div>
         </div>
-      </div>
-      <% }); %>
   </script>
+
+
+
+
 
   <script type="text/template" id="rush-profile-template">
       <div class="nav" id="header">
@@ -386,6 +435,9 @@
     </div>
   </script>
 
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+  <script src="/js/foundation.min.js"></script>
 </body>
 
 </html>
