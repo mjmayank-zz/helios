@@ -282,7 +282,7 @@
         <div class="row text-center">
             <div class="small-12 medium-offset-2 medium-8 columns">
                 <input class="search field" type="text" placeholder="Search">
-                <button class="search">Search</button>
+                <button class="search disabled">Search</button>
             </div>
         </div>
         <div id="rush-card-subview"></div>
@@ -315,7 +315,7 @@
                         <h1 class="inline-block"><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
                     </div>
                     <div class="small-4 column votes" data-equalizer-watch>
-                        <i class="fi-arrow-up vote"></i> 0 <i class="fi-arrow-down vote"></i> 0
+                        <i class="fi-arrow-up upvote vote"></i> <%= upVotes %> <i class="fi-arrow-down downvote vote"></i> <%= downVotes %>
                     </div>
                 </div>
                 <div class="row">
@@ -411,7 +411,9 @@
                     <div class="medium-4 end columns">
                         <% } %>
                         <div class="question">
-                            <%= Parse.User.current().escape("custom1") %>
+                            <% if(questions.length > 0) { %>
+                            <%= questions[index] %>
+                            <% } %>
                         </div>
                         <div>
                             <%= rushee.get('customQuestions')[index] %>

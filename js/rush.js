@@ -238,6 +238,8 @@ $(function() {
                     form.set("highschool", formdata.elements["highschool"].value.replace(/,/g, ''));
                     form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g, ''));
                     form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
+                    form.set("upVote", []);
+                    form.set("downVote", []);
                     for (var q in that.variables["formQuestions"]) {
                         form.add("customQuestions", formdata.elements["custom" + q].value.replace(/,/g, ''));
                     }
@@ -406,7 +408,8 @@ $(function() {
                                 "talked": [],
                                 "previous": "",
                                 "next": "",
-                                "comments": []
+                                "comments": [],
+                                "questions":[]
                             },
             $(".content").html(this.el);
 
@@ -419,6 +422,11 @@ $(function() {
                     // The object was retrieved successfully.
                     that.variables["rushee"] = rushee;
                     that.render();
+
+                    Parse.User.current().get("organization").fetch().then(function(){
+                        that.variables["questions"] = Parse.User.current().get("organization").get("formQuestions");
+                        that.render();
+                    });
 
                     var talkedarr = rushee.get("talked");
                     var temptalked = [];
@@ -560,6 +568,8 @@ $(function() {
         events: {
             "click #drop": "drop",
             "click #talked": "talked",
+            "click .upvote": "upVote",
+            "click .downvote": "downVote"
         },
 
         id: "rush-card",
@@ -568,6 +578,8 @@ $(function() {
             _.bindAll(this, "drop", "talked")
             this.variables = {};
             this.variables["rushee"] = rush;
+            this.variables["upVotes"] = rush.get("upVote") ? rush.get("upVote").length : "0";
+            this.variables["downVotes"] = rush.get("upVote") ? rush.get("downVote").length : "0";
             var comment = Parse.Object.extend("Comment");
             var commentsQuery = new Parse.Query(comment);
             commentsQuery.equalTo("about", rush);
@@ -595,6 +607,30 @@ $(function() {
             this.variables["rushee"].addUnique("talked", Parse.User.current());
             this.variables["rushee"].save();
             console.log("met saved");
+        },
+
+        upVote: function(){
+            this.variables["rushee"].remove("downVote", Parse.User.current());
+            this.variables["rushee"].addUnique("upVote", Parse.User.current());
+            var that = this;
+            this.variables["rushee"].save().then(function(){
+                that.variables["upVotes"] = that.variables["rushee"].get("upVote").length;
+                that.variables["downVotes"] = that.variables["rushee"].get("downVote").length;
+                that.render();
+                console.log("upvoted");
+            });
+        },
+
+        downVote: function(){
+            this.variables["rushee"].remove("upVote", Parse.User.current());
+            this.variables["rushee"].addUnique("downVote", Parse.User.current());
+            var that = this;
+            this.variables["rushee"].save().then(function(){
+                that.variables["upVotes"] = that.variables["rushee"].get("upVote").length;
+                that.variables["downVotes"] = that.variables["rushee"].get("downVote").length;
+                that.render();
+                console.log("downvoted");
+            });
         },
 
         render: function(array) {
@@ -675,8 +711,6 @@ $(function() {
                                     dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
                                 }
                                 dict["residence"] = array[obj].get("residence");
-                                dict["custom1"] = array[obj].get("custom1");
-                                dict["custom2"] = array[obj].get("custom2");
                                 dict["fileurl"] = array[obj].get("pic").url();
                                 that.variables["array"].push(dict);
                             }

@@ -50,6 +50,10 @@ button:hover{
   }
 }
 
+button.disabled, button.disabled:hover{
+  background-color: #978DE7;
+}
+
 .button{
   font-family: 'Lato';
   font-weight: 900;
