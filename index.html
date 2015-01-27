@@ -132,7 +132,7 @@
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
                     Name:
-                    <input type="text" id="name" placeholder="Name" required/>
+                    <input type="text" id="name" placeholder="Name" />
                     </label>
                     <small class="error">Required</small>
                 </div>
@@ -141,7 +141,7 @@
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
                     Email:
-                    <input type="email" class="required" id="email" placeholder="Email" required/>
+                    <input type="email" class="required" id="email" placeholder="Email" />
                     </label>
                     <small class="error">Required. Must be an email</small>
                 </div>
@@ -150,7 +150,7 @@
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
                     Phone Number:
-                    <input type="text" class="required" id="phonenumber" placeholder="Phone Number" required/>
+                    <input type="text" class="required" id="phonenumber" placeholder="Phone Number" />
                     </label>
                     <small class="error">Required</small>
                 </div>
@@ -182,6 +182,7 @@
             </div>
             <div id="custom-questions">
             </div>
+
             <div id="video-div" class="row text-center">
                 <div class="small-12 columns">
                     <video id="video" muted loop autoplay></video>
@@ -205,6 +206,20 @@
             </div>
         </form>
     </script>
+
+    <script type = "text/template">
+                <% if(/(iPad|iPhone|iPod)/g.test( navigator.userAgent )){ %>
+            <div class="row">
+                <div class="small-12 medium-8 medium-offset-2 columns">
+                    <label>
+                    Upload profile image:
+                    <input type="file" name="image" accept="image/*" capture required/>
+                    </label>
+                </div>
+            </div>
+            <% } else { %>
+              <% } %>
+    </scrip>
 
     <script type="text/template" id="form-custom-questions">
       <% _.each(formQuestions, function(question, index){ %>

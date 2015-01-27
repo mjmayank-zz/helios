@@ -86,41 +86,37 @@ $(function() {
         initialize: function(orgid) {
             console.log("initialize register");
             $(".content").html(this.el);
-            _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake");
+            _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "setUpWebcam", "saveForm");
 
             // Main todo management template
 
             this.picTaken = null;
             var that = this;
-            $(document).foundation();
 
             if (orgid == null) {
-                Parse.User.current().get("organization").fetch({
-                    success: function(myObj) {
-                        that.variables["organization"] = myObj;
-                        that.variables["orgName"] = myObj.get("name");
-                        that.variables["formQuestions"] = myObj.get("formQuestions");
-                        that.render();
-                        this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
-                    }
-                });
+                this.orgid = Parse.User.current().get("organization").id
             } else {
                 this.orgid = orgid;
-                var org = Parse.Object.extend("Organization");
-                var query = new Parse.Query(org);
-                query.get(orgid).then(function(myObj) {
-                    that.variables["organization"] = myObj;
-                    that.variables["orgName"] = myObj.get("name");
-                    that.variables["formQuestions"] = myObj.get("formQuestions");
-                    that.render();
-                    this.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
-                });
             }
+            var org = Parse.Object.extend("Organization");
+            var query = new Parse.Query(org);
+            query.get(orgid).then(function(myObj) {
+                that.variables["organization"] = myObj;
+                that.variables["orgName"] = myObj.get("name");
+                that.variables["formQuestions"] = myObj.get("formQuestions");
+                that.render();
+                $(document).foundation();
+                that.$("#custom-questions").html(_.template($("#form-custom-questions").html(), that.variables));
+                // if(!/(iPad|iPhone|iPod)/g.test( navigator.userAgent )){
+                    that.setUpWebcam();
+                // }
+            });
+        },
 
+        setUpWebcam: function(){
             this.video = document.querySelector('video');
             this.canvas = document.getElementById("canvas"),
                 this.context = canvas.getContext("2d");
-            this.Form = Parse.Object.extend("Form");
 
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
@@ -180,6 +176,8 @@ $(function() {
         },
 
         submit: function(e) {
+            console.log("submitted");
+            console.log(e);
             // this.validateForm();
             if (e.namespace != 'abide.fndtn') {
                 return;
@@ -190,46 +188,77 @@ $(function() {
             }
 
             if (this.$('#canvas-div').hasClass("hide")) {
+                console.log("take a picture!");
                 alert("Take a picture");
                 return;
             }
 
             this.$('#submit').addClass("disabled");
-            var formdata = document.getElementById("info");
-            var form = new this.Form();
-            var that = this;
 
-            var file = new Parse.File("myfile.png", {
-                base64: this.convertCanvasToImage(this.canvas)
-            });
-            file.save().then(function() {
-                form.set("name", formdata.elements["name"].value);
-                form.set("email", formdata.elements["email"].value);
-                form.set("hometown", formdata.elements["hometown"].value.replace(/,/g, ''));
-                form.set("highschool", formdata.elements["highschool"].value.replace(/,/g, ''));
-                form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g, ''));
-                form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
-                for (var q in that.variables["formQuestions"]) {
-                    form.add("customQuestions", formdata.elements["custom" + q].value.replace(/,/g, ''));
-                }
-                form.addUnique("organizations", that.variables["organization"]);
-                form.set("pic", file);
-                form.save(null, {
-                    success: function(form) {
-                        // Execute any logic that should take place after the object is saved.
-                        alert('Submitted!');
-                        formdata.reset();
-                        that.retake();
-                        that.$('#submit').removeClass("disabled");
-                    },
-                    error: function(form, error) {
-                        // Execute any logic that should take place if the save fails.
-                        // error is a Parse.Error with an error code and message.
-                        alert('Failed to create new object, with error code: ' + error.message);
-                    }
+            var file;
+
+
+            // if(/(iPad|iPhone|iPod)/g.test( navigator.userAgent )){
+            //     console.log("iphone");
+            //     var reader = new FileReader();
+
+            //     reader.onloadend = function () {
+            //         console.log("test");
+            //         file = new Parse.File("myfile.png", {
+            //             base64: reader.result
+            //         });
+            //         this.saveForm(file);
+            //     }
+            // } else{
+                console.log("desktop");
+                file = new Parse.File("myfile.png", {
+                    base64: this.convertCanvasToImage(this.canvas)
                 });
-            });
+                this.saveForm(file);
+            // }
         },
+
+        saveForm: function(file) {
+                var formObj = Parse.Object.extend("Form");
+                var form = new formObj();
+                console.log("file", file);
+                var that = this;
+                file.save().then(function() {
+                    console.log("pic saved");
+                    var formdata = document.getElementById("info");
+                    console.log("form0");
+                    console.log("form");
+                    form.set("name", formdata.elements["name"].value);
+                    console.log("form2");
+                    form.set("email", formdata.elements["email"].value);
+                    console.log("form3");
+                    form.set("hometown", formdata.elements["hometown"].value.replace(/,/g, ''));
+                    console.log("form4");
+                    form.set("highschool", formdata.elements["highschool"].value.replace(/,/g, ''));
+                    form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g, ''));
+                    form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
+                    for (var q in that.variables["formQuestions"]) {
+                        form.add("customQuestions", formdata.elements["custom" + q].value.replace(/,/g, ''));
+                    }
+                    form.addUnique("organizations", that.variables["organization"]);
+                    form.set("pic", file);
+                    form.save( {
+                        success: function(form) {
+                            // Execute any logic that should take place after the object is saved.
+                            alert('Submitted!');
+                            formdata.reset();
+                            that.retake();
+                            that.$('#submit').removeClass("disabled");
+                        },
+                        error: function(form, error) {
+                            // Execute any logic that should take place if the save fails.
+                            // error is a Parse.Error with an error code and message.
+                            alert('Failed to create new object, with error code: ' + error.message);
+                        }
+                    });
+                });
+        },
+
         close: function() {
             this.stream && this.stream.stop();
             console.log("close form");
