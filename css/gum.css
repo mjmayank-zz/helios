@@ -251,7 +251,7 @@ header img{
   background-color: white!important;
 }
 
-.nav a:hover{
+.nav li:hover a{
   color: #5846e2!important;
 }
  

@@ -403,13 +403,13 @@ $(function() {
         id: "profile",
 
         initialize: function(rushid) {
-            _.bindAll(this, "talked");
+            _.bindAll(this, "talked", "postComment", "talked", "drop");
             this.variables = {
                                 "talked": [],
                                 "previous": "",
                                 "next": "",
                                 "comments": [],
-                                "questions":[]
+                                "questions": []
                             },
             $(".content").html(this.el);
 
@@ -423,9 +423,10 @@ $(function() {
                     that.variables["rushee"] = rushee;
                     that.render();
 
-                    Parse.User.current().get("organization").fetch().then(function(){
-                        that.variables["questions"] = Parse.User.current().get("organization").get("formQuestions");
-                        that.render();
+                    Parse.User.current().get("organization").fetch(
+                        function(myObj){
+                            that.variables["questions"] = myObj.get("formQuestions");
+                            that.render();
                     });
 
                     var talkedarr = rushee.get("talked");
@@ -473,6 +474,7 @@ $(function() {
                     var commentsQuery = new Parse.Query(comment);
                     commentsQuery.equalTo("about", rushee);
                     commentsQuery.equalTo("org", Parse.User.current().get("organization"));
+                    commentsQuery.descending("createdAt");
                     commentsQuery.find(
                         function(array) {
                             that.variables["comments"] = array;
