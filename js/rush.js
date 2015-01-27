@@ -38,9 +38,10 @@ $(function() {
 
             Parse.User.logIn(username, password, {
                 success: function(user) {
-                    new RegisterFormView();
-                    self.undelegateEvents();
-                    delete self;
+                    router.rushes();
+                    // new RegisterFormView();
+                    // self.undelegateEvents();
+                    // delete self;
                 },
 
                 error: function(user, error) {
@@ -280,20 +281,23 @@ $(function() {
         },
 
         signUp: function(e) {
+            console.log("form submitted");
             var self = this;
             var org = this.$("#signup-frat-name").val();
+            var name = this.$("#signup-name").val();
             var username = this.$("#signup-username").val();
             var password = this.$("#signup-password").val();
 
-            Parse.User.signUp(username, password, {
+            Parse.User.signUp(username, password, null, {
                 success: function(user) {
                     console.log("signup done");
-                    var form = Parse.Object.extend("Organization");
-                    var obj = new form();
+                    var orgObj = Parse.Object.extend("Organization");
+                    var obj = new orgObj();
                     obj.set("name", org);
                     obj.save().then(function(myObj) {
                         console.log("saved", myObj);
                         user.set("organization", myObj);
+                        user.set("name", name);
                         user.save();
                         new RegisterFormView();
                         self.undelegateEvents();
@@ -302,6 +306,7 @@ $(function() {
                 },
 
                 error: function(user, error) {
+                    console.log(error);
                     self.$(".signup-form .error").html(_.escape(error.message)).show();
                     self.$(".signup-form button").removeAttr("disabled");
                 }
@@ -853,6 +858,7 @@ $(function() {
         },
 
         checkCurrentUser: function() {
+            // Parse.User.logOut();
             if (Parse.User.current()) {
                 Parse.User.current().fetch();
                 return true;
@@ -868,7 +874,7 @@ $(function() {
 
     });
 
-    new AppRouter();
+    var router = new AppRouter();
     // new AppView;
     Parse.history.start();
 });
