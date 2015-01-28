@@ -656,21 +656,21 @@ $(function() {
 
         id: "dashboard-view",
 
-        variables: {
-            "status": "active",
-            "array": []
-        },
-
         initialize: function() {
             _.bindAll(this, "logOut", "loadMore", "downloadCSV");
             $(".content").html(this.el);
+            this.variables = {
+                                "status": "active",
+                                "array": []
+                            },
             this.variables["orgid"] = Parse.User.current().get("organization").id;
-            this.render();
 
             var nav = responsiveNav(".nav-collapse");
 
             this.subView = new RushCardListView();
             this.$('#rush-card-subview').html(this.subView.el);
+            this.render();
+            
             var test = this.getActive();
         },
 
