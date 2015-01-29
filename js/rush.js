@@ -645,6 +645,31 @@ $(function() {
 
     })
 
+    var SettingsView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "settings-view",
+
+        initialize: function() {
+            $(".content").html(this.el);
+            this.variables = {}
+            var that = this;
+            this.variables["orgid"] = Parse.User.current().get("organization").fetch(
+                function(myObj){
+                    that.variables["organization"] = myObj;
+                    that.render();
+            });
+        },
+
+        render: function(){
+            this.$el.html(_.template($("#settings-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
     var DashboardView = Parse.View.extend({
         events: {
             "click .log-out": "logOut",
@@ -665,12 +690,12 @@ $(function() {
                             },
             this.variables["orgid"] = Parse.User.current().get("organization").id;
 
-            var nav = responsiveNav(".nav-collapse");
-
+            this.render();
             this.subView = new RushCardListView();
             this.$('#rush-card-subview').html(this.subView.el);
-            this.render();
-            
+
+            var nav = responsiveNav(".nav-collapse");
+
             var test = this.getActive();
         },
 
@@ -842,6 +867,8 @@ $(function() {
             "rushes": "rushes",
             "rushes/:rushid": "profile",
 
+            "settings": "settings",
+
             "*path": "rushes"
         },
 
@@ -890,6 +917,15 @@ $(function() {
             } else {
                 console.log("profile");
                 this.loadView(new ProfileView(rushid));
+            }
+        },
+
+        settings: function(){
+            if (!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                console.log("profile");
+                this.loadView(new SettingsView());
             }
         },
 
