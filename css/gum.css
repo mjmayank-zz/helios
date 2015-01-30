@@ -10,7 +10,7 @@ a:hover{
   color: #5D4AEF;
 }
 
-body, h1, h2, h6{
+body, h1, h2, h3, h6{
   font-family: 'Lato', 'san-serif';
 }
 
@@ -114,8 +114,9 @@ header{
   font-weight: 900;
 }
 
-header img{
+.nav img{
   max-height: 50px;
+  padding: 10px;
 }
 
 .camera{
@@ -248,7 +249,7 @@ header img{
 }
  
 .nav li:hover {
-  background-color: white!important;
+  background-color: white;
 }
 
 .nav li:hover a{
@@ -291,6 +292,85 @@ header img{
 
 .votes{
   line-height: 2;
+}
+
+.hero{
+  background-image: url("../images/login_background.jpg");
+}
+
+.hero-text{
+  padding: 175px 0px;
+  color: white!important;
+}
+
+.hero-text h1, .hero-text h2{
+  color: white;
+}
+
+.hero .nav li:hover{
+  background-color: transparent;
+}
+
+.icon-circle{
+  width: 80px;
+  height: 80px;
+  background-color: #fed136;
+  margin: auto;
+  border-radius: 60px;
+  font-size: 3em;
+  padding: 5px 0;
+  color: white;
+}
+
+.bg-light-gray{
+  background-color: #f8f8f8;
+}
+
+section{
+  padding: 100px 0;
+}
+
+.section-subheading{
+  margin-bottom: 50px;
+}
+
+.nav .links{
+  text-transform: uppercase;
+  color: white;
+  font-weight: 100;
+}
+
+.nav .links li:hover a{
+  color: #fed136!important;
+}
+
+.section-heading{
+  font-family: "Lato", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 3em;
+}
+
+
+.service-heading{
+  margin-top: 10px;
+  font-family: "Lato", sans-serif;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 1em;
+}
+
+.text-muted{
+  font-family: "Raleway";
+  font-weight: 300;
+}
+
+.client-image{
+  margin-top: 50px;
+}
+
+footer ul{
+  list-style: none;
 }
 
 @media screen and (min-width: 600px) {

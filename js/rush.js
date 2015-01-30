@@ -867,13 +867,19 @@ $(function() {
             "rushes": "rushes",
             "rushes/:rushid": "profile",
 
+            "login": "rushes",
+
             "settings": "settings",
 
-            "*path": "rushes"
+            "*path": "homepage"
         },
 
         initialize: function(options) {
             console.log("initialize");
+        },
+
+        homepage: function(){
+            $(".content").html(_.template($("#homepage-template").html()));
         },
 
         form: function() {
