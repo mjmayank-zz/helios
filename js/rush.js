@@ -304,7 +304,7 @@ $(function() {
                 that.render();
 
                 $(document).foundation();
-                that.$("#custom-questions2").html(_.template($("#form-custom-questions").html(), that.variables));
+                that.$("#custom-questions2").html(_.template($("#update-custom-questions").html(), that.variables));
             });
         },
 

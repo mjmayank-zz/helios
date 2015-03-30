@@ -126,10 +126,7 @@
 
             <div class="row">
               <div class="small-12 medium-8 medium-offset-2 columns">
-                  <label>
-                  Type your new question below
-                  <input type="text" class="required" id="newQuestion" placeholder="New question text goes here!" />
-                  </label>
+                  <input type="text" class="required" id="newQuestion" placeholder="Type your new question here!" />
               </div>
           </div>
 
@@ -267,6 +264,18 @@
       </div>
       <% }); %>
     </script>
+
+    <script type="text/template" id="update-custom-questions">
+      <% _.each(formQuestions, function(question, index){ %>
+      <div class="row">
+          <div class="small-12 medium-8 medium-offset-2 columns">
+              <input type="text" class="required" id="custom<%=index%>" value="<%= question %>" />
+          </div>
+      </div>
+      <% }); %>
+    </script>
+
+
 
     <script type="text/template" id="dashboard-template">
         <div class="nav show-for-medium-up" id="header">
