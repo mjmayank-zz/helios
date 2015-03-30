@@ -269,6 +269,68 @@ $(function() {
 
     });
 
+    // This view allows a member to customize their org's form questions.
+    var updateQuestionsView = Parse.View.extend({
+        events: {
+            "click #submit": "saveForm"
+        },
+
+        id: "updateQuestions",
+
+        variables: {
+            "organization": [],
+            "formQuestions": [],
+            "orgName": ""
+        },
+
+        initialize: function(orgid){
+
+            $(".content").html(this.el);
+            var that = this;
+
+            if (orgid == null) {
+                this.orgid = Parse.User.current().get("organization").id;
+            } else {
+                this.orgid = orgid;
+            }
+
+            var org = Parse.Object.extend("Organization");
+            var query = new Parse.Query(org);
+
+            query.get(orgid).then(function(myObj) {
+                that.variables["organization"] = myObj;
+                that.variables["orgName"] = myObj.get("name");
+                that.variables["formQuestions"] = myObj.get("formQuestions");
+                that.render();
+
+                $(document).foundation();
+                that.$("#custom-questions2").html(_.template($("#update-custom-questions").html(), that.variables));
+            });
+        },
+
+        render: function(){
+            this.$el.html(_.template($("#update-question-template").html()));
+            this.delegateEvents();
+        },
+
+        saveForm: function(){
+            this.orgid = Parse.User.current().get("organization").id;
+
+            var org = Parse.Object.extend("Organization");
+            var query = new Parse.Query(org);
+
+            var newQText = document.getElementById("newQuestion").value;
+
+            query.get(this.orgid).then(function(myObj) {
+                if (newQText != ""){ // don't add empty string as a question.
+                    myObj.addUnique("formQuestions", newQText);
+                    myObj.save();
+                    location.reload();
+                }
+            });
+        }
+    });
+
     var orgSignupView = Parse.View.extend({
         events: {
             "submit form.signup-form": "signUp"
@@ -861,6 +923,8 @@ $(function() {
             "form": "form",
             "form/:orgid": "orgForm",
 
+            "update/:orgid": "updateQuestions",
+
             "signup": "orgSignup",
             "signup/:orgid": "memberSignup",
 
@@ -895,6 +959,11 @@ $(function() {
         orgForm: function(orgid) {
             console.log("orgForm");
             this.loadView(new RegisterFormView(orgid));
+        },
+
+        updateQuestions: function(orgid){
+            console.log('update questions form');
+            this.loadView(new updateQuestionsView(orgid));
         },
 
         orgSignup: function() {

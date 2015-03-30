@@ -103,14 +103,42 @@
         </div>
     </script>
 
+    <script type="text/template" id="update-question-template">
+        <div class="nav" id="header">
+            <div class="small-8 columns">
+                <header ><img src="images/logo_small_alt.png"></header>
+            </div>
+            <% if(Parse.User.current()) { %>
+            <div class="small-4 columns">
+                <ul class="right">
+                    <li><a href="/#/rushes">Dashboard</a></li>
+                </ul>
+            </div>
+            <% } %>
+        </div>
+
+        <h1 class="text-center">Update form </h1>
+
+        <form id="info" data-abide="ajax">
+            </div>
+                <div id="custom-questions2">
+            </div>
+
+            <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <input type="text" class="required" id="newQuestion" placeholder="Type your new question here!" />
+              </div>
+          </div>
+
+          <div class="row text-center">
+            <div class="medium-12 columns">
+                <button type="submit" class="button success" id="submit">SUBMIT</a>
+            </div>
+          </div>
+        </form>
 
 
-
-
-
-
-
-
+    </script>
 
     <script type="text/template" id="register-form-template">
         <div class="nav" id="header">
@@ -237,9 +265,15 @@
       <% }); %>
     </script>
 
-
-
-
+    <script type="text/template" id="update-custom-questions">
+      <% _.each(formQuestions, function(question, index){ %>
+      <div class="row">
+          <div class="small-12 medium-8 medium-offset-2 columns">
+              <input type="text" class="required" id="custom<%=index%>" value="<%= question %>" />
+          </div>
+      </div>
+      <% }); %>
+    </script>
 
 
 
@@ -252,7 +286,8 @@
                 <ul class="right">
                     <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
                     <li><a id="download-csv">Get CSV</a></li>
-                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
+                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Go to Form</a></li>
+                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Update</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
             </div>
