@@ -762,6 +762,8 @@ $(function() {
         },
 
         getActive: function() {
+        	this.$('#dropped-button').addClass("secondary")
+        	this.$('#active-button').removeClass("secondary")
             if (this.variables["active"]) {
                 this.subView.render(this.variables["active"]);
                 return this.variables["active"];
@@ -817,6 +819,8 @@ $(function() {
         },
 
         getDropped: function() {
+        	this.$('#dropped-button').removeClass("secondary")
+        	this.$('#active-button').addClass("secondary")
             if (this.variables["inactive"]) {
                 this.subView.render(this.variables["inactive"]);
             } else {
