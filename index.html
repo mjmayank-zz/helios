@@ -267,14 +267,120 @@
 
     <script type="text/template" id="update-custom-questions">
       <% _.each(formQuestions, function(question, index){ %>
-      <div class="row">
-          <div class="small-12 medium-8 medium-offset-2 columns">
-              <input type="text" class="required" id="custom<%=index%>" value="<%= question %>" />
+          <div class="row">
+              <div class="small-12 medium-8 medium-offset-2 columns">
+                  <input type="text" class="required" id="custom<%=index%>" value="<%= question %>" />
+              </div>
           </div>
-      </div>
       <% }); %>
     </script>
 
+
+
+    <script type="text/template" id="create-event-template">
+        <div class="nav" id="header">
+            <div class="small-8 columns">
+                <header ><img src="images/logo_small_alt.png"></header>
+            </div>
+            <div class="small-4 columns">
+                <ul class="right">
+                    <li><a href="/#/rushes">Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <h1>Create New Event</h1>
+            </div>
+        </div>
+        <div class="row">
+          <div class="small-12 columns">
+            <form class="signup-form">
+              <div class="error" style="display:none"></div>
+              <input type="text" id="create-event-name" placeholder="Event Name" />
+              <input type="date" autocorrect="off" autocapitalize="off" id="create-event-date" placeholder="Date" />
+              <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
+              <button>Add question</button>
+              <div class="text-center"><button>Create</button></div>
+            </form>
+          </div>
+        </div>
+    </script>
+
+    <script type="text/template" id="event-template">
+        <div class="nav" id="header">
+            <div class="small-8 columns">
+                <header ><img src="images/logo_small_alt.png"></header>
+            </div>
+            <div class="small-4 columns">
+                <ul class="right">
+                    <li><a href="/#/rushes">Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <h1>Events</h1>
+            </div>
+        </div>
+        <div id="event-card-subview"></div>
+    </script>
+
+
+
+    <script type="text/template" id="event-list-template">
+        <% _.each(data, function(event){ %>
+            <div class="event-card" id="<%= event.id %>">
+            </div>
+        <% }); %>
+    </script>
+
+
+    <script type="text/template" id="event-card-template">
+        <div class="row">
+            <div class="medium-3 columns card-pic text-center">
+                <a href="/#/rushes/<%= rushee.id %>"><img src="<%= rushee.get('pic').url() %>"></a>
+            </div>
+            <div class="medium-7 columns">
+                <div class="row" data-equalizer>
+                    <div class="small-8 column" data-equalizer-watch>
+                        <h1 class="inline-block"><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
+                    </div>
+                    <div class="small-4 column votes" data-equalizer-watch>
+                        <i class="fi-arrow-up upvote vote"></i> <%= upVotes %> <i class="fi-arrow-down downvote vote"></i> <%= downVotes %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-12 column">
+                        Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-12 columns">
+                        <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+                        <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+                        <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+                    </div>
+                </div>
+                <% if (comment != undefined) { %>
+                <div class="row comments-section">
+                    <div class="medium-12 columns comment">
+                        <div>
+                            <span class="comment-author question"><%= comment.get("authorName") %></span>
+                            <span class="comment-timestamp"><%= comment.createdAt %></span>
+                        </div>
+                        <div>
+                            <%= comment.get("comment") %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <div class="small-12 small-text-center medium-2 columns">
+                <a id="talked" class="button">MET</a>
+            </div>
+        </div>
+    </script>
 
 
     <script type="text/template" id="dashboard-template">
@@ -286,7 +392,7 @@
                 <ul class="right">
                     <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
                     <li><a id="download-csv">Get CSV</a></li>
-                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Go to Form</a></li>
+                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
                     <li><a id="update-questions" href="/#/update/<%=orgid%>">Update</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
@@ -298,7 +404,8 @@
                 <ul>
                     <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
                     <li><a id="download-csv">Get CSV</a></li>
-                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Back to Form</a></li>
+                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
+                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Update</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
             </nav>
@@ -329,16 +436,14 @@
 
 
 
-
-
-
-
     <script type="text/template" id="rush-list-template">
         <% _.each(data, function(rushee){ %>
             <div class="rush-card" id="<%= rushee.id %>">
             </div>
         <% }); %>
     </script>
+
+
 
 
     <script type="text/template" id="rush-card-template">

@@ -38,7 +38,7 @@ $(function() {
 
             Parse.User.logIn(username, password, {
                 success: function(user) {
-                    router.rushes();
+                    router.navigate("/#/rushes")
                     // new RegisterFormView();
                     // self.undelegateEvents();
                     // delete self;
@@ -594,24 +594,219 @@ $(function() {
 
     });
 
+    var DashboardView = Parse.View.extend({
+        events: {
+            "click .log-out": "logOut",
+            "click #download-csv": "downloadCSV",
+            "click #loadAll": "loadMore",
+            "click #dropped-button": "getDropped",
+            "click #active-button": "getActive",
+        },
+
+        id: "dashboard-view",
+
+        initialize: function() {
+            _.bindAll(this, "logOut", "loadMore", "downloadCSV");
+            $(".content").html(this.el);
+            this.variables = {
+                                "status": "active",
+                                "array": []
+                            },
+            this.variables["orgid"] = Parse.User.current().get("organization").id;
+
+            this.render();
+            this.subView = new RushCardListView();
+            this.$('#rush-card-subview').html(this.subView.el);
+
+            var nav = responsiveNav(".nav-collapse");
+
+            var test = this.getActive();
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#dashboard-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+
+        getActive: function() {
+        	this.$('#dropped-button').addClass("secondary")
+        	this.$('#active-button').removeClass("secondary")
+            if (this.variables["active"]) {
+                this.subView.render(this.variables["active"]);
+                return this.variables["active"];
+            } else {
+                var form = Parse.Object.extend("Form");
+
+                var notInactiveQuery = new Parse.Query(form);
+                notInactiveQuery.notEqualTo("status", "inactive");
+
+                var notNullQuery = new Parse.Query(form);
+                notNullQuery.doesNotExist("status");
+
+                var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+                // var query = new Parse.Query(form);
+                query.equalTo("organizations", Parse.User.current().get("organization"));
+                query.descending("createdAt");
+                query.limit(5);
+                var that = this;
+                query.find({
+                    success: function(array) {
+                        // The object was retrieved successfully.
+                        that.variables["active"] = array;
+                        that.subView.updateData(array);
+                        for (obj in array) {
+                            // console.log(array[obj].get('talked'));
+                            var status = array[obj].get("status");
+                            if (status == null || status != "inactive") {
+                                var dict = {};
+                                dict["name"] = array[obj].get("name");
+                                dict["id"] = array[obj].id;
+                                dict["email"] = array[obj].get("email");
+                                dict["hometown"] = array[obj].get("hometown");
+                                dict["highschool"] = array[obj].get("highschool");
+                                dict["phonenumber"] = array[obj].get("phonenumber");
+                                if (dict["phonenumber"].length == 10) {
+                                    dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+                                }
+                                dict["residence"] = array[obj].get("residence");
+                                dict["fileurl"] = array[obj].get("pic").url();
+                                that.variables["array"].push(dict);
+                            }
+                        }
+                        return array;
+                    },
+                    error: function(object, error) {
+                        // The object was not retrieved successfully.
+                        // error is a Parse.Error with an error code and message.
+                        console.log("error");
+                        return [];
+                    }
+                });
+            }
+        },
+
+        getDropped: function() {
+        	this.$('#dropped-button').removeClass("secondary")
+        	this.$('#active-button').addClass("secondary")
+            if (this.variables["inactive"]) {
+                this.subView.updateData(this.variables["inactive"]);
+            } else {
+                var form = Parse.Object.extend("Form");
+
+                var query = new Parse.Query(form);
+                query.equalTo("status", "inactive");
+                query.equalTo("organizations", Parse.User.current().get("organization"));
+                query.descending("createdAt");
+                query.limit(5);
+                var that = this;
+                query.find({
+                    success: function(array) {
+                        // The object was retrieved successfully.
+                        that.variables["inactive"] = array;
+                        // that.render(that.variables);
+                        that.subView.updateData(array);
+                    },
+                    error: function(object, error) {
+                        // The object was not retrieved successfully.
+                        // error is a Parse.Error with an error code and message.
+                        console.log("error");
+                    }
+                });
+            }
+        },
+
+        loadMore: function(e) {
+            console.log(e.target);
+            this.$('#loadAll').addClass("hide");
+            console.log("loadmore");
+
+            var form = Parse.Object.extend("Form");
+
+            var notInactiveQuery = new Parse.Query(form);
+            notInactiveQuery.notEqualTo("status", "inactive");
+
+            var notNullQuery = new Parse.Query(form);
+            notNullQuery.doesNotExist("status");
+
+            var query = Parse.Query.or(notInactiveQuery, notNullQuery);
+            // var query = new Parse.Query(form);
+            query.equalTo("organizations", Parse.User.current().get("organization"));
+            query.descending("createdAt");
+            query.skip(5);
+            query.limit(1000);
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    that.variables["active"] = that.variables["active"].concat(array);
+                    that.subView.updateData(that.variables["active"]);
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                }
+            });
+        },
+
+        downloadCSV: function() {
+            console.log(this.variables["array"]);
+            var data = [];
+            for (var rushee in this.variables["array"]) {
+                var sing_val = []
+                for (var key in this.variables["array"][rushee]) {
+                    sing_val.push(this.variables["array"][rushee][key]);
+                }
+                console.log(sing_val);
+                data.push(sing_val);
+            }
+
+            console.log(data);
+
+            // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
+            var csvContent = "data:text/csv;charset=utf-8,";
+            data.forEach(function(infoArray, index) {
+                dataString = infoArray.join(",");
+                csvContent += dataString + "\n";
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
+        },
+
+        // Logs out the user and shows the login view
+        logOut: function(e) {
+            Parse.User.logOut();
+            new LogInView();
+            this.undelegateEvents();
+            delete this;
+        }
+    })
+
     var RushCardListView = Parse.View.extend({
 
         id: "rush-card-list",
 
         initialize: function(array) {
-            _.bindAll(this, "close");
+            _.bindAll(this, "close", "updateData");
             this.variables = {
-                                "array": [],
-                                "data": []
+                                "data": array
                             }
             console.log("initialize rushes");
-            this.render(array);
+            this.render();
         },
 
-        render: function(array) {
-            this.$el.html(_.template($("#rush-list-template").html(), {
-                "data": array
-            }));
+        updateData: function(array){
+        	this.variables = {
+        		"data" : array
+        	}
+        	this.render()
+        },
+
+        render: function() {
+        	var array = this.variables["data"]
+            this.$el.html(_.template($("#rush-list-template").html(), this.variables));
             this.delegateEvents();
 
             _.each(array, function(rushee) {
@@ -707,6 +902,111 @@ $(function() {
 
     })
 
+    var CreateEventView = Parse.View.extend({
+        events: {
+        	"click #submit": "submitPressed"
+        },
+
+        id: "create-event-view",
+
+        initialize: function() {
+            $(".content").html(this.el);
+            console.log(this.el)
+            this.variables = {}
+            this.render()
+        },
+
+        submitPressed: function() {
+        	var newevent = Parse.Object.extend("Event")
+            var obj = new newevent();
+            obj.set("title", this.$("#comment-textbox")[0].value);
+            obj.set("date", Parse.User.current());
+            obj.set("org", Parse.User.current().get("organization"));
+            var that = this;
+            obj.save().then(function() {
+                console.log("saved");
+                
+            });
+        },
+
+        render: function(){
+        	console.log("test")
+            this.$el.html(_.template($("#create-event-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
+    var EventView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "event-view",
+
+        initialize: function() {
+            $(".content").html(this.el);
+            this.variables = {
+            	"status": "active",
+            	"array": []
+            }
+            this.render()
+            this.subView = new EventListView();
+            this.$('#event-card-subview').html(this.subView.el);
+        },
+
+        render: function(){
+        	console.log("test")
+            this.$el.html(_.template($("#event-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
+	var EventListView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "event-list-view",
+
+        initialize: function() {
+            this.variables = {
+            	"data": []
+            }
+            this.render()
+        },
+
+        render: function(){
+        	console.log("test list view")
+            this.$el.html(_.template($("#event-list-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
+    var EventCardView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "event-card-view",
+
+        initialize: function() {
+            this.variables = {
+            	"data": []
+            }
+            this.render()
+        },
+
+        render: function(){
+        	console.log("test list view")
+            this.$el.html(_.template($("#event-card-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
     var SettingsView = Parse.View.extend({
         events: {
 
@@ -732,196 +1032,6 @@ $(function() {
         },
     })
 
-    var DashboardView = Parse.View.extend({
-        events: {
-            "click .log-out": "logOut",
-            "click #download-csv": "downloadCSV",
-            "click #loadAll": "loadMore",
-            "click #dropped-button": "getDropped",
-            "click #active-button": "getActive",
-        },
-
-        id: "dashboard-view",
-
-        initialize: function() {
-            _.bindAll(this, "logOut", "loadMore", "downloadCSV");
-            $(".content").html(this.el);
-            this.variables = {
-                                "status": "active",
-                                "array": []
-                            },
-            this.variables["orgid"] = Parse.User.current().get("organization").id;
-
-            this.render();
-            this.subView = new RushCardListView();
-            this.$('#rush-card-subview').html(this.subView.el);
-
-            var nav = responsiveNav(".nav-collapse");
-
-            var test = this.getActive();
-        },
-
-        getActive: function() {
-        	this.$('#dropped-button').addClass("secondary")
-        	this.$('#active-button').removeClass("secondary")
-            if (this.variables["active"]) {
-                this.subView.render(this.variables["active"]);
-                return this.variables["active"];
-            } else {
-                var form = Parse.Object.extend("Form");
-
-                var notInactiveQuery = new Parse.Query(form);
-                notInactiveQuery.notEqualTo("status", "inactive");
-
-                var notNullQuery = new Parse.Query(form);
-                notNullQuery.doesNotExist("status");
-
-                var query = Parse.Query.or(notInactiveQuery, notNullQuery);
-                // var query = new Parse.Query(form);
-                query.equalTo("organizations", Parse.User.current().get("organization"));
-                query.descending("createdAt");
-                query.limit(5);
-                var that = this;
-                query.find({
-                    success: function(array) {
-                        // The object was retrieved successfully.
-                        that.variables["active"] = array;
-                        that.subView.render(array);
-                        for (obj in array) {
-                            // console.log(array[obj].get('talked'));
-                            var status = array[obj].get("status");
-                            if (status == null || status != "inactive") {
-                                var dict = {};
-                                dict["name"] = array[obj].get("name");
-                                dict["id"] = array[obj].id;
-                                dict["email"] = array[obj].get("email");
-                                dict["hometown"] = array[obj].get("hometown");
-                                dict["highschool"] = array[obj].get("highschool");
-                                dict["phonenumber"] = array[obj].get("phonenumber");
-                                if (dict["phonenumber"].length == 10) {
-                                    dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
-                                }
-                                dict["residence"] = array[obj].get("residence");
-                                dict["fileurl"] = array[obj].get("pic").url();
-                                that.variables["array"].push(dict);
-                            }
-                        }
-                        return array;
-                    },
-                    error: function(object, error) {
-                        // The object was not retrieved successfully.
-                        // error is a Parse.Error with an error code and message.
-                        console.log("error");
-                        return [];
-                    }
-                });
-            }
-        },
-
-        getDropped: function() {
-        	this.$('#dropped-button').removeClass("secondary")
-        	this.$('#active-button').addClass("secondary")
-            if (this.variables["inactive"]) {
-                this.subView.render(this.variables["inactive"]);
-            } else {
-                var form = Parse.Object.extend("Form");
-
-                var query = new Parse.Query(form);
-                query.equalTo("status", "inactive");
-                query.equalTo("organizations", Parse.User.current().get("organization"));
-                query.descending("createdAt");
-                query.limit(5);
-                var that = this;
-                query.find({
-                    success: function(array) {
-                        // The object was retrieved successfully.
-                        that.variables["inactive"] = array;
-                        // that.render(that.variables);
-                        that.subView.render(array);
-                    },
-                    error: function(object, error) {
-                        // The object was not retrieved successfully.
-                        // error is a Parse.Error with an error code and message.
-                        console.log("error");
-                    }
-                });
-            }
-        },
-
-        loadMore: function(e) {
-            console.log(e.target);
-            this.$('#loadAll').addClass("hide");
-            console.log("loadmore");
-
-            var form = Parse.Object.extend("Form");
-
-            var notInactiveQuery = new Parse.Query(form);
-            notInactiveQuery.notEqualTo("status", "inactive");
-
-            var notNullQuery = new Parse.Query(form);
-            notNullQuery.doesNotExist("status");
-
-            var query = Parse.Query.or(notInactiveQuery, notNullQuery);
-            // var query = new Parse.Query(form);
-            query.equalTo("organizations", Parse.User.current().get("organization"));
-            query.descending("createdAt");
-            query.skip(5);
-            query.limit(1000);
-            var that = this;
-            query.find({
-                success: function(array) {
-                    // The object was retrieved successfully.
-                    that.variables["active"] = that.variables["active"].concat(array);
-                    that.subView.render(that.variables["active"]);
-                },
-                error: function(object, error) {
-                    // The object was not retrieved successfully.
-                    // error is a Parse.Error with an error code and message.
-                    console.log("error");
-                }
-            });
-        },
-
-        downloadCSV: function() {
-            console.log(this.variables["array"]);
-            var data = [];
-            for (var rushee in this.variables["array"]) {
-                var sing_val = []
-                for (var key in this.variables["array"][rushee]) {
-                    sing_val.push(this.variables["array"][rushee][key]);
-                }
-                console.log(sing_val);
-                data.push(sing_val);
-            }
-
-            console.log(data);
-
-            // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
-            var csvContent = "data:text/csv;charset=utf-8,";
-            data.forEach(function(infoArray, index) {
-                dataString = infoArray.join(",");
-                csvContent += dataString + "\n";
-            });
-
-            var encodedUri = encodeURI(csvContent);
-            window.open(encodedUri);
-        },
-
-        // Logs out the user and shows the login view
-        logOut: function(e) {
-            Parse.User.logOut();
-            new LogInView();
-            this.undelegateEvents();
-            delete this;
-        },
-
-        render: function() {
-            this.$el.html(_.template($("#dashboard-template").html(), this.variables));
-            this.delegateEvents();
-            return this;
-        }
-    })
-
     var AppRouter = Parse.Router.extend({
         routes: {
             "form": "form",
@@ -939,7 +1049,10 @@ $(function() {
 
             "settings": "settings",
 
-            "*path": "homepage"
+            "events": "events",
+			"events/create": "createEvent",
+
+            "*path": "homepage",
         },
 
         initialize: function(options) {
@@ -957,6 +1070,24 @@ $(function() {
                 this.loadView(new LogInView());
             } else {
                 this.loadView(new RegisterFormView());
+            }
+        },
+
+		events: function(){
+        	console.log("events");
+        	if (!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                this.loadView(new EventView());
+            }
+        },
+
+        createEvent: function(){
+        	console.log("createEvent");
+        	if (!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                this.loadView(new CreateEventView());
             }
         },
 
