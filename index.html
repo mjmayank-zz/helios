@@ -298,8 +298,10 @@
             <form class="signup-form">
               <div class="error" style="display:none"></div>
               <input type="text" id="create-event-name" placeholder="Event Name" />
-              Event Date:
-              <input type="date" autocorrect="off" autocapitalize="off" id="create-event-date" placeholder="Date" />
+              Event Start Date:
+              <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-date" placeholder="Date" />
+              Event End Time:
+              <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-end-date" placeholder="Date" />
               <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
               <button>Add question</button>
               <div class="text-center"><button id="submit">Create</button></div>
@@ -633,14 +635,15 @@
     <!-- Header -->
     <div class="hero">
         <div class="row nav">
-            <div class="small-8 columns">
+            <div class="small-8 medium-4 columns">
                 <img src="images/logo_small_alt.png">
             </div>
-            <div class="small-4 columns links">
+            <div class="small-4 medium-8 columns links">
                 <div class="right">
                     <ul>
                         <li><a href="#services">Product</a></li>
                         <li><a href="#contact">Contact</a></li>
+                        <li><a href="/#/login">Login</a></li>
                     </ul>
                 </div>
             </div>

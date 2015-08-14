@@ -299,6 +299,12 @@ header{
   background-size: cover;
 }
 
+@media screen and (max-width: 500px) {
+  .hero, #login-wrapper{
+    background-image: url("../images/login_background_mobile.jpg");
+  }
+}
+
 .hero-text{
   padding: 175px 0px;
   color: white!important;

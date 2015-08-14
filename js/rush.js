@@ -1067,12 +1067,14 @@ $(function() {
 
         id: "event-profile-view",
 
-        initialize: function() {
+        initialize: function(eventid) {
         	$(".content").html(this.el);
             this.variables = {
             	"data": []
             }
             this.render()
+
+            this.queryAttendees(eventid)
         },
 
         render: function(){
@@ -1081,6 +1083,83 @@ $(function() {
             this.delegateEvents();
             return this;
         },
+
+        queryAttendees: function(eventid){
+        	var form = Parse.Object.extend("Event");
+
+            var query = new Parse.Query(form);
+            var that = this;
+            query.get(eventid, {
+                success: function(obj) {
+                    // The object was retrieved successfully.
+                    var relation = obj.relation("attendees");
+
+                    var query = relation.query();
+                    query.find({
+                    	success: function(array){
+                    		console.log(array)
+                    	}
+                    });
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
+        }
+    })
+
+    var EventFormView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "event-profile-view",
+
+        initialize: function(eventid) {
+        	$(".content").html(this.el);
+            this.variables = {
+            	"data": []
+            }
+            this.render()
+
+            this.queryAttendees(eventid)
+        },
+
+        render: function(){
+        	console.log("test list view")
+            this.$el.html(_.template($("#event-profile-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+
+        queryAttendees: function(eventid){
+        	var form = Parse.Object.extend("Event");
+
+            var query = new Parse.Query(form);
+            var that = this;
+            query.get(eventid, {
+                success: function(obj) {
+                    // The object was retrieved successfully.
+                    var relation = obj.relation("attendees");
+
+                    var query = relation.query();
+                    query.find({
+                    	success: function(array){
+                    		console.log(array)
+                    	}
+                    });
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
+        }
     })
 
     var SettingsView = Parse.View.extend({
@@ -1128,6 +1207,7 @@ $(function() {
             "events": "events",
 			"events/create": "createEvent",
 			"events/:eventid": "eventProfile",
+			"events/:eventid/form": "eventForm",
 
             "*path": "homepage",
         },
@@ -1168,13 +1248,18 @@ $(function() {
             }
         },
 
-        eventProfile: function(){
+        eventProfile: function(eventid){
         	console.log("eventProfile")
         	if (!this.checkCurrentUser()) {
                 this.loadView(new LogInView());
             } else {
-                this.loadView(new EventProfileView());
+                this.loadView(new EventProfileView(eventid));
             }
+        },
+
+        eventForm: function(eventid){
+        	console.log("eventForm")
+            this.loadView(new EventFormView(eventid));
         },
 
         orgForm: function(orgid) {
