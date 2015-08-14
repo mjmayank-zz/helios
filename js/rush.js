@@ -240,6 +240,7 @@ $(function() {
                     form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
                     form.set("upVote", []);
                     form.set("downVote", []);
+                    form.set("customQuestions", [])
                     for (var q in that.variables["formQuestions"]) {
                         form.add("customQuestions", formdata.elements["custom" + q].value.replace(/,/g, ''));
                     }
