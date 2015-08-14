@@ -296,6 +296,7 @@ header{
 
 .hero{
   background-image: url("../images/login_background.jpg");
+  background-size: cover;
 }
 
 .hero-text{

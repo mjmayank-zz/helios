@@ -633,7 +633,7 @@ $(function() {
         	this.$('#dropped-button').addClass("secondary")
         	this.$('#active-button').removeClass("secondary")
             if (this.variables["active"]) {
-                this.subView.render(this.variables["active"]);
+                this.subView.updateData(this.variables["active"]);
                 return this.variables["active"];
             } else {
                 var form = Parse.Object.extend("Form");
@@ -691,6 +691,7 @@ $(function() {
         	this.$('#active-button').addClass("secondary")
             if (this.variables["inactive"]) {
                 this.subView.updateData(this.variables["inactive"]);
+                return this.variables["inactive"];
             } else {
                 var form = Parse.Object.extend("Form");
 
@@ -798,9 +799,7 @@ $(function() {
         },
 
         updateData: function(array){
-        	this.variables = {
-        		"data" : array
-        	}
+        	this.variables["data"] = array
         	this.render()
         },
 
@@ -917,16 +916,20 @@ $(function() {
         },
 
         submitPressed: function() {
+        	console.log(this.$("#create-event-date")[0].value)
         	var newevent = Parse.Object.extend("Event")
             var obj = new newevent();
-            obj.set("title", this.$("#comment-textbox")[0].value);
-            obj.set("date", Parse.User.current());
+            obj.set("title", this.$("#create-event-name")[0].value);
+            var date = new Date(this.$("#create-event-date")[0].value)
+            console.log(date)
+            obj.set("start_date", date);
             obj.set("org", Parse.User.current().get("organization"));
             var that = this;
             obj.save().then(function() {
                 console.log("saved");
-                
+                router.navigate("/#/events")
             });
+            return false
         },
 
         render: function(){
@@ -953,6 +956,42 @@ $(function() {
             this.render()
             this.subView = new EventListView();
             this.$('#event-card-subview').html(this.subView.el);
+            this.queryEvents()
+        },
+
+        queryEvents: function(){
+    		var eventquery = Parse.Object.extend("Event");
+
+            var query = new Parse.Query(eventquery);
+            query.equalTo("org", Parse.User.current().get("organization"));
+            query.descending("createdAt");
+            query.limit(5);
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    console.log(array)
+                    that.subView.updateData(array);
+                    for (obj in array) {
+                        // console.log(array[obj].get('talked'));
+                        var status = array[obj].get("status");
+                        if (status == null || status != "inactive") {
+                            var dict = {};
+                            dict["title"] = array[obj].get("title");
+                            dict["id"] = array[obj].id;
+                            dict["start_date"] = array[obj].get("start_date")
+                            that.variables["array"].push(dict);
+                        }
+                    }
+                    return array;
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
         },
 
         render: function(){
@@ -977,10 +1016,22 @@ $(function() {
             this.render()
         },
 
+        updateData: function(array) {
+        	this.variables["data"] = array
+        	this.render()
+        },
+
         render: function(){
+        	var array = this.variables["data"]
         	console.log("test list view")
             this.$el.html(_.template($("#event-list-template").html(), this.variables));
             this.delegateEvents();
+
+            _.each(array, function(event) {
+                var eventCard = new EventCardView(event);
+                this.$('#' + event.id).html(eventCard.el);
+            });
+
             return this;
         },
     })
@@ -992,7 +1043,31 @@ $(function() {
 
         id: "event-card-view",
 
+        initialize: function(event) {
+            this.variables = {
+            	"data": []
+            }
+            this.variables["event"] = event
+            this.render()
+        },
+
+        render: function(){
+        	console.log("test list view")
+            this.$el.html(_.template($("#event-card-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+    })
+
+    var EventProfileView = Parse.View.extend({
+        events: {
+
+        },
+
+        id: "event-profile-view",
+
         initialize: function() {
+        	$(".content").html(this.el);
             this.variables = {
             	"data": []
             }
@@ -1001,7 +1076,7 @@ $(function() {
 
         render: function(){
         	console.log("test list view")
-            this.$el.html(_.template($("#event-card-template").html(), this.variables));
+            this.$el.html(_.template($("#event-profile-template").html(), this.variables));
             this.delegateEvents();
             return this;
         },
@@ -1051,6 +1126,7 @@ $(function() {
 
             "events": "events",
 			"events/create": "createEvent",
+			"events/:eventid": "eventProfile",
 
             "*path": "homepage",
         },
@@ -1088,6 +1164,15 @@ $(function() {
                 this.loadView(new LogInView());
             } else {
                 this.loadView(new CreateEventView());
+            }
+        },
+
+        eventProfile: function(){
+        	console.log("eventProfile")
+        	if (!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                this.loadView(new EventProfileView());
             }
         },
 

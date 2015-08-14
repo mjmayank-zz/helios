@@ -298,10 +298,11 @@
             <form class="signup-form">
               <div class="error" style="display:none"></div>
               <input type="text" id="create-event-name" placeholder="Event Name" />
+              Event Date:
               <input type="date" autocorrect="off" autocapitalize="off" id="create-event-date" placeholder="Date" />
               <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
               <button>Add question</button>
-              <div class="text-center"><button>Create</button></div>
+              <div class="text-center"><button id="submit">Create</button></div>
             </form>
           </div>
         </div>
@@ -324,6 +325,9 @@
             </div>
         </div>
         <div id="event-card-subview"></div>
+        <div class="row">
+            <div class="text-center"><a id="newEvent" class="button">New Event</a></div>
+        </div>
     </script>
 
 
@@ -338,48 +342,34 @@
 
     <script type="text/template" id="event-card-template">
         <div class="row">
-            <div class="medium-3 columns card-pic text-center">
-                <a href="/#/rushes/<%= rushee.id %>"><img src="<%= rushee.get('pic').url() %>"></a>
-            </div>
-            <div class="medium-7 columns">
-                <div class="row" data-equalizer>
-                    <div class="small-8 column" data-equalizer-watch>
-                        <h1 class="inline-block"><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
-                    </div>
-                    <div class="small-4 column votes" data-equalizer-watch>
-                        <i class="fi-arrow-up upvote vote"></i> <%= upVotes %> <i class="fi-arrow-down downvote vote"></i> <%= downVotes %>
-                    </div>
+            <div class="medium-10 columns">
+                <div class="row">
+                        <h1 class="inline-block"><a href="/#/events/<%= event.id %>"><%= event.get('title') %></a></h1>
                 </div>
                 <div class="row">
-                    <div class="medium-12 column">
-                        Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
-                    </div>
+                    <%= event.get('start_date') %>
                 </div>
-                <div class="row">
-                    <div class="medium-12 columns">
-                        <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
-                        <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
-                        <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
-                    </div>
-                </div>
-                <% if (comment != undefined) { %>
-                <div class="row comments-section">
-                    <div class="medium-12 columns comment">
-                        <div>
-                            <span class="comment-author question"><%= comment.get("authorName") %></span>
-                            <span class="comment-timestamp"><%= comment.createdAt %></span>
-                        </div>
-                        <div>
-                            <%= comment.get("comment") %>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-            </div>
-            <div class="small-12 small-text-center medium-2 columns">
-                <a id="talked" class="button">MET</a>
             </div>
         </div>
+    </script>
+
+    <script type="text/template" id="event-profile-template">
+        <div class="nav" id="header">
+            <div class="small-8 columns">
+                <header ><img src="images/logo_small_alt.png"></header>
+            </div>
+            <div class="small-4 columns">
+                <ul class="right">
+                    <li><a href="/#/rushes">Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <h1>Events</h1>
+            </div>
+        </div>
+        <div id="rush-list-subview"></div>
     </script>
 
 
@@ -412,17 +402,17 @@
         </div>
         <div class="row text-center">
             <ul class="button-group">
-                <li class="button secondary" id="dropped-button">DROPPED</li>
+                <li class="button" id="dropped-button">DROPPED</li>
                 <li class="button" id="active-button">ACTIVE</li>
-                <li class="button secondary">All</li>
+                <!--<li class="button secondary">All</li>-->
             </ul>
         </div>
-        <div class="row text-center">
+        <!--<div class="row text-center">
             <ul class="button-group">
                 <li class="button secondary">I Met</li>
                 <li class="button">All</li>
             </ul>
-        </div>
+        </div>-->
         <div class="row text-center">
             <div class="small-12 medium-offset-2 medium-8 columns">
                 <input class="search field" type="text" placeholder="Search">
@@ -649,9 +639,9 @@
         </div>
         <div class="row hero-text">
             <div class="small-12 columns text-center">
-                <h2><span style="font-weight:100;">Welcome To </span><span style="font-weight:900;font-style:normal!important;color:#fed136;">HELIOS</span></h2>
+                <h2><span style="font-weight:100;">Welcome To </span><span style="font-weight:900;font-style:normal!important;color:#5846e2;">HELIOS</span></h2>
                 <h1><span style="text-transform:uppercase;font-size:1.5em;font-weight:900">Simplify your rush process</span></h1>
-                <a href="/#/login" class="page-scroll button">LOGIN</a>
+                <a style="background-color:#fed136" href="/#/login" class="page-scroll button">LOGIN</a>
             </div>
         </div>
     </div>
