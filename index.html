@@ -162,19 +162,19 @@
             <div class="row">
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
-                    Name:
-                    <input type="text" id="name" placeholder="Name" />
+                    Email:
+                    <input type="email" class="required" id="email" placeholder="Email" />
                     </label>
-                    <small class="error">Required</small>
+                    <small class="error">Required. Must be an email</small>
                 </div>
             </div>
             <div class="row">
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
-                    Email:
-                    <input type="email" class="required" id="email" placeholder="Email" />
+                    Name:
+                    <input type="text" id="name" placeholder="Name" />
                     </label>
-                    <small class="error">Required. Must be an email</small>
+                    <small class="error">Required</small>
                 </div>
             </div>
             <div class="row">
@@ -290,7 +290,7 @@
         </div>
         <div class="row">
             <div class="small-12 columns text-center">
-                <h1>Create New Event</h1>
+                <h1>Create New Event</h1></a>
             </div>
         </div>
         <div class="row">
@@ -298,12 +298,13 @@
             <form class="signup-form">
               <div class="error" style="display:none"></div>
               <input type="text" id="create-event-name" placeholder="Event Name" />
-              Event Start Date:
-              <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-date" placeholder="Date" />
-              Event End Time:
+              Event Start Date (mm/dd/yyyy, hh:mm AM/PM):
+              <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-date" value="pm" placeholder="Date" />
+              Event End Time (mm/dd/yyyy, hh:mm AM/PM):
               <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-end-date" placeholder="Date" />
-              <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
-              <button>Add question</button>
+              <!--<input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
+              <button>Add question</button>-->
+              *If the date fields aren't working properly, please use Chrome or Safari
               <div class="text-center"><button id="submit">Create</button></div>
             </form>
           </div>
@@ -328,7 +329,7 @@
         </div>
         <div id="event-card-subview"></div>
         <div class="row">
-            <div class="text-center"><a id="newEvent" class="button">New Event</a></div>
+            <div class="text-center"><a href="/#/events/create" id="newEvent" class="button">New Event</a></div>
         </div>
     </script>
 
@@ -349,7 +350,10 @@
                         <h1 class="inline-block"><a href="/#/events/<%= event.id %>"><%= event.get('title') %></a></h1>
                 </div>
                 <div class="row">
-                    <%= event.get('start_date') %>
+                    Start Time: <%= event.get('start_date') %>
+                </div>
+                <div class="row">
+                    End Time: <%= event.get('end_date') %>
                 </div>
             </div>
         </div>
@@ -383,7 +387,7 @@
             <div class="small-4 medium-8 columns show-for-medium-up">
                 <ul class="right">
                     <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
-                    <li><a id="download-csv">Get CSV</a></li>
+                    <li><a href="/#/events">Events</a></li>
                     <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
                     <li><a id="update-questions" href="/#/update/<%=orgid%>">Update</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
@@ -395,7 +399,7 @@
             <nav class="nav nav-collapse">
                 <ul>
                     <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
-                    <li><a id="download-csv">Get CSV</a></li>
+                    <li><a href="/#/events">Events</a></li>
                     <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
                     <li><a id="update-questions" href="/#/update/<%=orgid%>">Update</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>

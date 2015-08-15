@@ -253,6 +253,21 @@ $(function() {
                             formdata.reset();
                             that.retake();
                             that.$('#submit').removeClass("disabled");
+							var eventObj = Parse.Object.extend("Event")
+							var query = new Parse.Query(eventObj)
+							query.equalTo("org", that.variables["organization"])
+							query.lessThan("start_date", new Date())
+							query.greaterThan("end_date", new Date())
+							query.find({
+								success: function(array){
+									console.log(array)
+									for (var index in array){
+										var relation = array[index].relation("attendees")
+										relation.add(form)
+										array[index].save()
+									}
+								}
+							})
                         },
                         error: function(form, error) {
                             // Execute any logic that should take place if the save fails.
@@ -921,9 +936,10 @@ $(function() {
         	var newevent = Parse.Object.extend("Event")
             var obj = new newevent();
             obj.set("title", this.$("#create-event-name")[0].value);
-            var date = new Date(this.$("#create-event-date")[0].value)
-            console.log(date)
-            obj.set("start_date", date);
+            var startDate = new Date(this.$("#create-event-date")[0].value)
+            var endDate = new Date(this.$("#create-event-date")[0].value)
+            obj.set("start_date", startDate);
+            obj.set("end_date", endDate);
             obj.set("org", Parse.User.current().get("organization"));
             var that = this;
             obj.save().then(function() {
@@ -1073,8 +1089,9 @@ $(function() {
             	"data": []
             }
             this.render()
-
             this.queryAttendees(eventid)
+            this.subView = new RushCardListView();
+            this.$('#rush-list-subview').html(this.subView.el);
         },
 
         render: function(){
@@ -1098,6 +1115,7 @@ $(function() {
                     query.find({
                     	success: function(array){
                     		console.log(array)
+                    		that.subView.updateData(array)
                     	}
                     });
                 },
