@@ -33,7 +33,7 @@ $(function() {
 
         logIn: function(e) {
             var self = this;
-            var username = this.$("#login-username").val();
+            var username = this.$("#login-username").val().toLowerCase();
             var password = this.$("#login-password").val();
 
             Parse.User.logIn(username, password, {
@@ -365,7 +365,7 @@ $(function() {
             var self = this;
             var org = this.$("#signup-frat-name").val();
             var name = this.$("#signup-name").val();
-            var username = this.$("#signup-username").val();
+            var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
 
             Parse.User.signUp(username, password, null, {
@@ -434,7 +434,7 @@ $(function() {
         signUp: function(e) {
             var self = this;
             var name = this.$("#signup-member-name").val();
-            var username = this.$("#signup-username").val();
+            var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
             var org = this.variables["org"];
 
