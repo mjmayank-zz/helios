@@ -929,15 +929,20 @@ $(function() {
             console.log(this.el)
             this.variables = {}
             this.render()
+            console.log("create event view")
         },
 
         submitPressed: function() {
         	console.log(this.$("#create-event-date")[0].value)
+            var curr = new Date()
+            console.log(curr.getTimezoneOffset())
         	var newevent = Parse.Object.extend("Event")
             var obj = new newevent();
             obj.set("title", this.$("#create-event-name")[0].value);
             var startDate = new Date(this.$("#create-event-date")[0].value)
-            var endDate = new Date(this.$("#create-event-date")[0].value)
+            startDate.setTime(startDate.getTime() + curr.getTimezoneOffset() * 60 * 1000)
+            var endDate = new Date(this.$("#create-event-end-date")[0].value)
+            endDate.setTime(endDate.getTime() + curr.getTimezoneOffset() * 60 * 1000)
             obj.set("start_date", startDate);
             obj.set("end_date", endDate);
             obj.set("org", Parse.User.current().get("organization"));
