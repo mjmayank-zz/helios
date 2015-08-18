@@ -409,7 +409,7 @@ $(function() {
                         user.set("organization", myObj);
                         user.set("name", name);
                         user.save();
-                        new RegisterFormView();
+                        router.navigate("/#/rushes")
                         self.undelegateEvents();
                         delete self;
                     });
@@ -477,7 +477,7 @@ $(function() {
                     user.set("organization", org);
                     user.save().then(function(myObj) {
                         console.log("saved new member");
-                        new DashboardView();
+                        router.navigate("/#/events")
                         self.undelegateEvents();
                         delete self;
                     });
