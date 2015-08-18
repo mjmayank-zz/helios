@@ -305,6 +305,10 @@ header{
   }
 }
 
+.button.disabled, .button.disabled:hover{
+  background-color: #5846e2;
+}
+
 .hero-text{
   padding: 175px 0px;
   color: white!important;

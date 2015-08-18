@@ -74,7 +74,7 @@
     <script type="text/template" id="member-signup-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header><img src="images/logo_small_alt.png"></header>
+                <header><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <% if(Parse.User.current()) { %>
             <div class="small-4 columns">
@@ -94,7 +94,7 @@
                     <div>Helios is an app for organizations to keep track of their recruits. Sign up to view, vote, and comment</div>
                     <% } %>
                     <div class="error" style="display:none"></div>
-                    <input type="text" id="signup-member-name" placeholder="Your name" />
+                    <input type="text" id="signup-member-name" placeholder="Name" />
                     <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Choose a username" />
                     <input type="password" id="signup-password" placeholder="Create a password" />
                     <div class="text-center"><button>Sign Up</button></div>
@@ -106,7 +106,7 @@
     <script type="text/template" id="update-question-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header ><img src="images/logo_small_alt.png"></header>
+                <header><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <% if(Parse.User.current()) { %>
             <div class="small-4 columns">
@@ -280,7 +280,7 @@
     <script type="text/template" id="create-event-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header ><img src="images/logo_small_alt.png"></header>
+                <header><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <div class="small-4 columns">
                 <ul class="right">
@@ -290,9 +290,15 @@
         </div>
         <div class="row">
             <div class="small-12 columns text-center">
-                <h1>Create New Event</h1></a>
+                <h1>Create New Event</h1>
             </div>
         </div>
+        <div class="row">
+            <div class="small-12 columns text-center">
+                <h6>Attendees are automatically added to events if they register on your form during the set hours. <br> If a recruit has already signed up at a previous event, all they have to do is type in their email address and the form will recognize them.</h6>
+            </div>
+        </div>
+        <br>
         <div class="row">
           <div class="small-12 columns">
             <form class="signup-form">
@@ -314,7 +320,7 @@
     <script type="text/template" id="event-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header ><img src="images/logo_small_alt.png"></header>
+                <header ><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <div class="small-4 columns">
                 <ul class="right">
@@ -362,7 +368,7 @@
     <script type="text/template" id="event-profile-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header ><img src="images/logo_small_alt.png"></header>
+                <header ><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <div class="small-4 columns">
                 <ul class="right">
@@ -517,7 +523,7 @@
     <script type="text/template" id="rush-profile-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
-                <header ><img src="images/logo_small_alt.png"></header>
+                <header ><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
             </div>
             <div class="small-4 columns">
                 <ul class="right">
@@ -621,7 +627,7 @@
                 </div>
                 <div class="row">
                     <div class="medium-offset-2 medium-8 columns">
-                        <textarea id="comment-textbox" rows="4" placeholder="Comment"></textarea>
+                        <textarea id="comment-textbox" rows="4" placeholder="Comments/Notes"></textarea>
                         <a class="button right" id="post-comment">Post</a>
                     </div>
                 </div>

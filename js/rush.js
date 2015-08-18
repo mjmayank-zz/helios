@@ -599,6 +599,10 @@ $(function() {
         talked: function(e) {
             this.variables["rushee"].addUnique("talked", Parse.User.current());
             this.variables["rushee"].save();
+            var metButton = $("#talked")
+            console.log(metButton)
+            metButton.addClass("disabled")
+            metButton.innerHTML = "You've met them"
             console.log("save");
         },
 
@@ -909,6 +913,10 @@ $(function() {
         talked: function(e) {
             this.variables["rushee"].addUnique("talked", Parse.User.current());
             this.variables["rushee"].save();
+            var metButton = $("#talked")
+            console.log(metButton)
+            metButton.addClass("disabled")
+            metButton[0].innerHTML = "You've met them"
             console.log("met saved");
         },
 
