@@ -71,6 +71,7 @@ $(function() {
             "click #snap": "snap",
             "click #retake": "retake",
             // "blur input": "formBlur"
+            "change #email": "checkIfRegistered"
         },
 
         id: "form",
@@ -87,7 +88,7 @@ $(function() {
         initialize: function(orgid) {
             console.log("initialize register");
             $(".content").html(this.el);
-            _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "setUpWebcam", "saveForm");
+            _.bindAll(this, 'render', 'submit', 'snap', 'gumSuccess', 'gumError', 'convertCanvasToImage', "close", "retake", "setUpWebcam", "saveForm", "resetForm", "addToEvents");
 
             // Main todo management template
 
@@ -176,6 +177,26 @@ $(function() {
             this.convertCanvasToImage(this.canvas);
         },
 
+        checkIfRegistered: function(e){
+            var formObj = Parse.Object.extend("Form");
+            var query = new Parse.Query(formObj);
+            query.equalTo("organizations", this.variables["organization"]);
+            query.equalTo("email", e.target.value)
+            var that = this
+            query.find({
+                success: function(array){
+                    console.log(array)
+                    if(array.length != 0){
+                        for(var index in array){
+                            that.addToEvents(array[index])
+                            alert("Looks like you've been here. We've added you to today's event");
+                            that.resetForm()
+                        }
+                    }
+                }
+            })
+        },
+
         submit: function(e) {
             console.log("submitted");
             console.log(e);
@@ -250,24 +271,8 @@ $(function() {
                         success: function(form) {
                             // Execute any logic that should take place after the object is saved.
                             alert('Submitted!');
-                            formdata.reset();
-                            that.retake();
-                            that.$('#submit').removeClass("disabled");
-							var eventObj = Parse.Object.extend("Event")
-							var query = new Parse.Query(eventObj)
-							query.equalTo("org", that.variables["organization"])
-							query.lessThan("start_date", new Date())
-							query.greaterThan("end_date", new Date())
-							query.find({
-								success: function(array){
-									console.log(array)
-									for (var index in array){
-										var relation = array[index].relation("attendees")
-										relation.add(form)
-										array[index].save()
-									}
-								}
-							})
+                            that.resetForm();
+                            that.addToEvents(form);
                         },
                         error: function(form, error) {
                             // Execute any logic that should take place if the save fails.
@@ -276,6 +281,31 @@ $(function() {
                         }
                     });
                 });
+        },
+
+        resetForm: function(){
+            var formdata = document.getElementById("info");
+            formdata.reset();
+            this.retake();
+            this.$('#submit').removeClass("disabled");
+        },
+
+        addToEvents: function(form){
+            var eventObj = Parse.Object.extend("Event")
+            var query = new Parse.Query(eventObj)
+            query.equalTo("org", this.variables["organization"])
+            query.lessThan("start_date", new Date())
+            query.greaterThan("end_date", new Date())
+            query.find({
+                success: function(array){
+                    console.log(array)
+                    for (var index in array){
+                        var relation = array[index].relation("attendees")
+                        relation.add(form)
+                        array[index].save()
+                    }
+                }
+            })
         },
 
         close: function() {
