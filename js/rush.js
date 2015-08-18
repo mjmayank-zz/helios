@@ -133,9 +133,9 @@ $(function() {
             if ('mozSrcObject' in video) {
                 console.log("1");
                 video.mozSrcObject = stream;
-            } else if (window.webkitURL) {
+            } else if (window.URL) {
                 console.log("2");
-                video.src = window.webkitURL.createObjectURL(stream);
+                video.src = window.URL.createObjectURL(stream);
             } else {
                 console.log("3");
                 video.src = stream;
