@@ -187,9 +187,9 @@ $(function() {
                 success: function(array){
                     console.log(array)
                     if(array.length != 0){
+                        alert("Looks like you've been here. We've added you to today's event");
                         for(var index in array){
                             that.addToEvents(array[index])
-                            alert("Looks like you've been here. We've added you to today's event");
                             that.resetForm()
                         }
                     }
