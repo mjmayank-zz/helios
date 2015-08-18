@@ -39,7 +39,6 @@ $(function() {
             Parse.User.logIn(username, password, {
                 success: function(user) {
                     router.navigate("/#/rushes")
-                    // new RegisterFormView();
                     // self.undelegateEvents();
                     // delete self;
                 },
@@ -825,7 +824,7 @@ $(function() {
         // Logs out the user and shows the login view
         logOut: function(e) {
             Parse.User.logOut();
-            new LogInView();
+            router.navigate("/#/login")
             this.undelegateEvents();
             delete this;
         }
