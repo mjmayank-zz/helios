@@ -131,7 +131,7 @@ $(function() {
         gumSuccess: function(stream) {
             // window.stream = stream;
             if ('mozSrcObject' in video) {
-                console.log("1");
+                console.log("moz");
                 video.mozSrcObject = stream;
             } else if (window.URL) {
                 console.log("2");
@@ -146,6 +146,7 @@ $(function() {
         },
 
         gumError: function(error) {
+            $("#webcam-error").removeClass('hide')
             console.error('Error on getUserMedia', error);
         },
 
