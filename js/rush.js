@@ -630,7 +630,7 @@ $(function() {
 
         drop: function(e) {
             var confirm = window.confirm("Are you sure you want to drop him?");
-            if (confirm == true) {
+            if (confirm === true) {
                 this.variables["rushee"].set("status", "inactive");
                 this.variables["rushee"].save();
                 console.log("drop saved");
@@ -670,7 +670,7 @@ $(function() {
 
             var nav = responsiveNav(".nav-collapse");
 
-            var test = this.getActive();
+            this.getActive();
         },
 
         render: function() {
@@ -904,7 +904,7 @@ $(function() {
 
         drop: function(e) {
             var confirm = window.confirm("Are you sure you want to drop him?");
-            if (confirm == true) {
+            if (confirm === true) {
                 this.variables["rushee"].set("status", "inactive");
                 this.variables["rushee"].save();
                 console.log("drop saved");
@@ -984,7 +984,6 @@ $(function() {
             obj.set("start_date", startDate);
             obj.set("end_date", endDate);
             obj.set("org", Parse.User.current().get("organization"));
-            var that = this;
             obj.save().then(function() {
                 console.log("saved");
                 router.navigate("/#/events")
@@ -1200,7 +1199,6 @@ $(function() {
         	var form = Parse.Object.extend("Event");
 
             var query = new Parse.Query(form);
-            var that = this;
             query.get(eventid, {
                 success: function(obj) {
                     // The object was retrieved successfully.
