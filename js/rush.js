@@ -475,7 +475,7 @@ $(function() {
                     user.set("organization", org);
                     user.save().then(function(myObj) {
                         console.log("saved new member");
-                        router.navigate("/#/events")
+                        router.navigate("/#/rushes")
                         self.undelegateEvents();
                         delete self;
                     });
