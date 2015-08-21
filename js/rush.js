@@ -220,7 +220,7 @@ $(function() {
 
             var parseFile;
 
-            if (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
+            if (/(Android|iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
                 console.log("mobile")
                 var fileInput = document.getElementById('fileInput');
                 var file = fileInput.files[0];
