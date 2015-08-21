@@ -406,6 +406,7 @@ $(function() {
             var self = this;
             var org = this.$("#signup-frat-name").val();
             var name = this.$("#signup-name").val();
+            var email = this.$("#signup-email").val();
             var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
 
@@ -419,6 +420,7 @@ $(function() {
                         console.log("saved", myObj);
                         user.set("organization", myObj);
                         user.set("name", name);
+                        user.set("email", email);
                         user.save();
                         router.navigate("/#/rushes")
                         self.undelegateEvents();
@@ -475,6 +477,7 @@ $(function() {
         signUp: function(e) {
             var self = this;
             var name = this.$("#signup-member-name").val();
+            var email = this.$("#signup-email").val();
             var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
             var org = this.variables["org"];
@@ -483,6 +486,7 @@ $(function() {
                 success: function(user) {
                     console.log("signup done");
                     user.set("name", name);
+                    user.set("email", email);
                     user.set("organization", org);
                     user.save().then(function(myObj) {
                         console.log("saved new member");

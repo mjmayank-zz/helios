@@ -63,6 +63,7 @@
               <div class="error" style="display:none"></div>
               <input type="text" id="signup-frat-name" placeholder="Organization Name" />
               <input type="text" autocorrect="off" autocapitalize="off" id="signup-name" placeholder="Name" />
+              <input type="email" autocorrect="off" autocapitalize="off" id="signup-email" placeholder="Email Address" />
               <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Username" />
               <input type="password" id="signup-password" placeholder="Create a Password" />
               <div class="text-center"><button>Sign Up</button></div>
@@ -89,12 +90,13 @@
                 <form class="signup-form">
                     <h2><%= orgName %> Sign Up</h2>
                     <% if(Parse.User.current()){ %>
-                    <div>Send this link (<a href="http://usehelios.com/#/signup/<%= org.id %>">http://usehelios.com/#/signup/<%= org.id %></a>) to invite fellow members to Helios, but keep it private within your organization. Anyone registered through this form can see your recruits and comments.</div>
+                    <div>Send this link (<a href="http://usehelios.com/#/signup/<%= org.id %>">http://usehelios.com/#/signup/<%= org.id %></a>) to invite fellow members to Helios (don't fill it out yourself). Keep it private within your organization. Anyone registered through this form can see your recruits and comments.</div>
                     <% } else { %>
-                    <div>Helios is an app for organizations to keep track of their recruits. Sign up to view, vote, and comment</div>
+                    <div>Helios is an app for organizations to keep track of their recruits. Your organization is using it to manage their recruiting process. Sign up to view, vote, and comment</div>
                     <% } %>
                     <div class="error" style="display:none"></div>
                     <input type="text" id="signup-member-name" placeholder="Name" />
+                    <input type="text" autocorrect="off" autocapitalize="off" id="signup-email" placeholder="Email Address" />
                     <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Choose a username" />
                     <input type="password" id="signup-password" placeholder="Create a password" />
                     <div class="text-center"><button>Sign Up</button></div>
