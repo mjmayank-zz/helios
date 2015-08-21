@@ -214,6 +214,17 @@
             <div id="custom-questions">
             </div>
 
+            <% if(/(iPad|iPhone|iPod)/g.test( navigator.userAgent )){ %>
+            <div class="row">
+                <div class="small-12 medium-8 medium-offset-2 columns">
+                    <label>
+                    Upload profile image:
+                    <input type="file" name="image" id="fileInput" accept="image/*" capture required/>
+                    </label>
+                </div>
+            </div>
+            <% } else { %>
+
             <div id="video-div" class="row text-center">
                 <div class="small-12 columns">
                     <video id="video" muted loop autoplay></video>
@@ -235,6 +246,8 @@
                     Make sure that you have allowed webcam permissions. On Chrome, you can change this setting by clicking on the camera icon on the right side of the URL bar. You may have to refresh the page after changing the setting.
                 </div>
             </div>
+
+            <% } %>
             <div class="row text-center">
                 <div class="medium-12 columns">
                     <button type="submit" class="button success" id="submit">SUBMIT</a>
@@ -249,7 +262,7 @@
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
                     Upload profile image:
-                    <input type="file" name="image" accept="image/*" capture required/>
+                    <input type="file" name="image" id="fileInput" accept="image/*" capture required/>
                     </label>
                 </div>
             </div>

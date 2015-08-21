@@ -69,6 +69,7 @@ $(function() {
             "valid.fndtn.abide": "submit",
             "click #snap": "snap",
             "click #retake": "retake",
+            // "change #fileInput": "uploadPicture",
             // "blur input": "formBlur"
             "change #email": "checkIfRegistered"
         },
@@ -217,27 +218,37 @@ $(function() {
 
             this.$('#submit').addClass("disabled");
 
-            var file;
+            var parseFile;
 
+            if (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
+                console.log("mobile")
+                var fileInput = document.getElementById('fileInput');
+                var file = fileInput.files[0];
+                var imageType = /image.*/;
+                var that = this
 
-            // if(/(iPad|iPhone|iPod)/g.test( navigator.userAgent )){
-            //     console.log("iphone");
-            //     var reader = new FileReader();
+                if (file.type.match(imageType)) {
+                    var reader = new FileReader();
 
-            //     reader.onloadend = function () {
-            //         console.log("test");
-            //         file = new Parse.File("myfile.png", {
-            //             base64: reader.result
-            //         });
-            //         this.saveForm(file);
-            //     }
-            // } else{
+                    reader.onload = function(e) {
+                        console.log(reader.result)
+                        parseFile = new Parse.File("myfile.png", {
+                            base64: reader.result
+                        });
+                        that.saveForm(parseFile)
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            } else {
                 console.log("desktop");
-                file = new Parse.File("myfile.png", {
+                parseFile = new Parse.File("myfile.png", {
                     base64: this.convertCanvasToImage(this.canvas)
                 });
-                this.saveForm(file);
-            // }
+                this.saveForm(parseFile);
+            }
+
+            return false
         },
 
         saveForm: function(file) {
