@@ -468,9 +468,7 @@ $(function() {
             var password = this.$("#signup-password").val();
             var org = this.variables["org"];
 
-            Parse.User.signUp(username, password, {
-                ACL: new Parse.ACL()
-            }, {
+            Parse.User.signUp(username, password, null, {
                 success: function(user) {
                     console.log("signup done");
                     user.set("name", name);
