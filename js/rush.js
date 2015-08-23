@@ -410,18 +410,21 @@ $(function() {
             var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
 
-            Parse.User.signUp(username, password, null, {
+            var user = new Parse.User()
+            user.set("name", name);
+            user.set("email", email);
+            user.set("username", username);
+            user.set("password", password);
+            user.signUp(null, {
                 success: function(user) {
                     console.log("signup done");
                     var orgObj = Parse.Object.extend("Organization");
                     var obj = new orgObj();
                     obj.set("name", org);
                     obj.save().then(function(myObj) {
-                        console.log("saved", myObj);
                         user.set("organization", myObj);
-                        user.set("name", name);
-                        user.set("email", email);
-                        user.save();
+                        user.save()
+                        console.log("saved", myObj);
                         router.navigate("/#/rushes")
                         self.undelegateEvents();
                         delete self;
@@ -477,23 +480,24 @@ $(function() {
         signUp: function(e) {
             var self = this;
             var name = this.$("#signup-member-name").val();
-            var email = this.$("#signup-email").val();
+            var email = this.$("#signup-email").val().toLowerCase();
             var username = this.$("#signup-username").val().toLowerCase();
             var password = this.$("#signup-password").val();
             var org = this.variables["org"];
 
-            Parse.User.signUp(username, password, null, {
+            var user = new Parse.User()
+            user.set("name", name);
+            user.set("email", email);
+            user.set("organization", org);
+            user.set("username", username);
+            user.set("password", password);
+            user.signUp(null, {
                 success: function(user) {
                     console.log("signup done");
-                    user.set("name", name);
-                    user.set("email", email);
-                    user.set("organization", org);
-                    user.save().then(function(myObj) {
-                        console.log("saved new member");
-                        router.navigate("/#/rushes")
-                        self.undelegateEvents();
-                        delete self;
-                    });
+                    console.log("saved new member");
+                    router.navigate("/#/rushes")
+                    self.undelegateEvents();
+                    delete self;
                 },
 
                 error: function(user, error) {
