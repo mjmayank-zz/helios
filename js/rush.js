@@ -485,6 +485,10 @@ $(function() {
             var password = this.$("#signup-password").val();
             var org = this.variables["org"];
 
+            if(name === "" || email === "" || org === null){
+                return false
+            }
+
             var user = new Parse.User()
             user.set("name", name);
             user.set("email", email);
