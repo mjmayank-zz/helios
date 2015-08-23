@@ -478,6 +478,7 @@ $(function() {
         },
 
         signUp: function(e) {
+            this.$(".signup-form button").attr("disabled", "disabled");
             var self = this;
             var name = this.$("#signup-member-name").val();
             var email = this.$("#signup-email").val().toLowerCase();
@@ -505,12 +506,11 @@ $(function() {
                 },
 
                 error: function(user, error) {
+                    console.log("error")
                     self.$(".signup-form .error").html(_.escape(error.message)).show();
                     self.$(".signup-form button").removeAttr("disabled");
                 }
             });
-
-            this.$(".signup-form button").attr("disabled", "disabled");
 
             return false;
         },
