@@ -15,7 +15,7 @@
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="js/underscore.js"></script>
     <script src="//www.parsecdn.com/js/parse-1.2.13.min.js"></script>
-    <script src="js/rush-min.js"></script>
+    <script src="js/rush.js"></script>
     <script src="/js/vendor/modernizr.js"></script>
     <link rel="stylesheet" href="css/responsive-nav.css">
 
@@ -472,7 +472,11 @@
     <script type="text/template" id="rush-card-template">
         <div class="row">
             <div class="medium-3 columns card-pic text-center">
-                <a href="/#/rushes/<%= rushee.id %>"><img src="<%= rushee.get('pic').url() %>"></a>
+                <a href="/#/rushes/<%= rushee.id %>"><% if(rushee.get('pic_url')){ %>
+                <img src="<%= rushee.get('pic_url') %>">
+            <%} else{%>
+                <img src="<%= rushee.get('pic').url() %>">
+            <%}%></a>
             </div>
             <div class="medium-7 columns">
                 <div class="row" data-equalizer>
@@ -558,7 +562,11 @@
                 <a href="/#/rushes">< BACK</a>
             </div>
             <div class="medium-8 columns end">
+            <% if(rushee.get('pic_url')){ %>
+                <img src="<%= rushee.get('pic_url') %>">
+            <%} else{%>
                 <img src="<%= rushee.get('pic').url() %>">
+            <%}%>
             </div>
         </div>
         <div class="row">
@@ -655,6 +663,12 @@
                 <div class="row text-center">
                     <a class="button" id="talked">&nbsp;MET&nbsp;</a>
                     <a class="button alert" id="drop">DROP</a>
+                </div>
+                <div class="row text-center">
+                    <div class="medium-offset-2 medium-8 columns">
+                        <input type="text" autocorrect="off" autocapitalize="off" id="change-pic-textbox" placeholder="URL for new Picture" />
+                        <a class="button" id="change-pic">Change Pic</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -117,8 +117,6 @@ $(function() {
 
         setUpWebcam: function(){
             this.video = document.querySelector('video');
-            this.canvas = document.getElementById("canvas"),
-                this.context = canvas.getContext("2d");
 
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
@@ -130,6 +128,8 @@ $(function() {
         },
 
         gumSuccess: function(stream) {
+            this.canvas = document.getElementById("canvas"),
+                this.context = canvas.getContext("2d");
             // window.stream = stream;
             if ('mozSrcObject' in video) {
                 console.log("moz");
@@ -199,7 +199,7 @@ $(function() {
         },
 
         submit: function(e) {
-            console.log("submitted");
+            console.log("submit button pressed");
             console.log(e);
             // this.validateForm();
             if (e.namespace != 'abide.fndtn') {
@@ -211,7 +211,6 @@ $(function() {
             }
 
             if (this.$('#canvas-div').hasClass("hide")) {
-                console.log("take a picture!");
                 alert("Take a picture");
                 return;
             }
@@ -526,7 +525,8 @@ $(function() {
         events: {
             "click #drop": "drop",
             "click #talked": "talked",
-            "click #post-comment": "postComment"
+            "click #post-comment": "postComment",
+            "click #change-pic": "changePic"
         },
 
         id: "profile",
@@ -656,6 +656,13 @@ $(function() {
                 this.variables["rushee"].save();
                 console.log("drop saved");
             }
+        },
+
+        changePic: function(e) {
+            var newURL = $("#change-pic-textbox")[0].value
+            console.log(newURL)
+            this.variables["rushee"].set("pic_url", newURL);
+            this.variables["rushee"].save()
         },
 
         render: function() {
