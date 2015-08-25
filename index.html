@@ -15,7 +15,7 @@
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="js/underscore.js"></script>
     <script src="//www.parsecdn.com/js/parse-1.2.13.min.js"></script>
-    <script src="js/rush.js"></script>
+    <script src="js/rush-min.js"></script>
     <script src="/js/vendor/modernizr.js"></script>
     <link rel="stylesheet" href="css/responsive-nav.css">
 
@@ -206,7 +206,7 @@
                     </label>
                 </div>
             </div>
-            <div class="row">
+            <div class="row hide">
                 <div class="small-12 medium-8 medium-offset-2 columns">
                     <label>
                     Dorm, Room Number:
@@ -472,7 +472,7 @@
     <script type="text/template" id="rush-card-template">
         <div class="row">
             <div class="medium-3 columns card-pic text-center">
-                <a href="/#/rushes/<%= rushee.id %>"><% if(rushee.get('pic_url')){ %>
+                <a href="/#/rushes/<%= rushee.id %>"><% if(rushee.get('pic_url') && rushee.get('pic_url') !== ""){ %>
                 <img src="<%= rushee.get('pic_url') %>">
             <%} else{%>
                 <img src="<%= rushee.get('pic').url() %>">
@@ -495,15 +495,15 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row">
-                        <div class="small-12 medium-4 columns">
+                        <div class="small-12 medium-6 columns">
                         <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
                         </div>
-                        <div class="small-12 medium-4 columns">
+                        <div class="small-12 medium-6 columns">
                         <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
                         </div>
-                        <div class="small-12 medium-4 columns">
+                        <!--<div class="small-12 medium-4 columns">
                         <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
-                        </div>
+                        </div>-->
                         </div>
                     </div>
                 </div>
@@ -598,11 +598,11 @@
                     <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
                 </div>
             </div>
-            <div class="row">
+            <!--<div class="row">
                 <div class="medium-offset-2 medium-8 columns">
                     <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
                 </div>
-            </div>
+            </div>-->
             <% for(var index = 0; index < rushee.get('customQuestions').length; index++){ %>
             <% if(index % 2 == 0) { %>
             <div class="row">
