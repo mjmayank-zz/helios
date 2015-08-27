@@ -1,0 +1,55 @@
+        <div class="row">
+            <div class="medium-3 columns card-pic text-center">
+                <a href="/#/rushes/<%= rushee.id %>"><% if(rushee.get('pic_url') && rushee.get('pic_url') !== ""){ %>
+                <img src="<%= rushee.get('pic_url') %>">
+            <%} else{%>
+                <img src="<%= rushee.get('pic').url() %>">
+            <%}%></a>
+            </div>
+            <div class="medium-7 columns">
+                <div class="row" data-equalizer>
+                    <div class="small-8 column" data-equalizer-watch>
+                        <h1 class="inline-block"><a href="/#/rushes/<%= rushee.id %>"><%= rushee.get('name') %></a></h1>
+                    </div>
+                    <div class="small-4 column votes" data-equalizer-watch>
+                        <i class="fi-arrow-up upvote vote"></i> <%= upVotes %> <i class="fi-arrow-down downvote vote"></i> <%= downVotes %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-12 column">
+                        Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-12 columns">
+                        <div class="row">
+                        <div class="small-12 medium-6 columns">
+                        <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+                        </div>
+                        <div class="small-12 medium-6 columns">
+                        <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+                        </div>
+                        <!--<div class="small-12 medium-4 columns">
+                        <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+                <% if (comment != undefined) { %>
+                <div class="row comments-section">
+                    <div class="medium-12 columns comment">
+                        <div>
+                            <span class="comment-author question"><%= comment.get("authorName") %></span>
+                            <span class="comment-timestamp"><%= comment.createdAt %></span>
+                        </div>
+                        <div>
+                            <%= comment.get("comment") %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <div class="small-12 small-text-center medium-2 columns">
+                <a id="talked" class="button">MET</a>
+            </div>
+        </div>

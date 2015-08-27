@@ -15,7 +15,8 @@
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="js/underscore.js"></script>
     <script src="//www.parsecdn.com/js/parse-1.2.13.min.js"></script>
-    <script src="js/rush-min.js"></script>
+    <script src="js/rush.js"></script>
+    <script src="js/papaparse.min.js"></script>
     <script src="/js/vendor/modernizr.js"></script>
     <link rel="stylesheet" href="css/responsive-nav.css">
 
@@ -474,7 +475,7 @@
             <div class="medium-3 columns card-pic text-center">
                 <a href="/#/rushes/<%= rushee.id %>"><% if(rushee.get('pic_url') && rushee.get('pic_url') !== ""){ %>
                 <img src="<%= rushee.get('pic_url') %>">
-            <%} else{%>
+            <%} else if(rushee.get('pic')){%>
                 <img src="<%= rushee.get('pic').url() %>">
             <%}%></a>
             </div>
@@ -544,6 +545,25 @@
         </div>
     </script>
 
+<script type="text/template" id="import-csv-template">
+    <div class="nav" id="header">
+        <div class="small-8 columns">
+            <header ><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
+        </div>
+        <div class="small-4 columns">
+            <ul class="right">
+                <li><a href="/#/rushes">Dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="dvImportSegments" class="fileupload ">
+    <fieldset>
+        <legend>Upload your CSV File</legend>
+            <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+   </fieldset>
+</div>
+</script>
+
 
     <script type="text/template" id="rush-profile-template">
         <div class="nav" id="header">
@@ -564,7 +584,7 @@
             <div class="medium-8 columns end">
             <% if(rushee.get('pic_url')){ %>
                 <img src="<%= rushee.get('pic_url') %>">
-            <%} else{%>
+            <%} else if(rushee.get('pic')){%>
                 <img src="<%= rushee.get('pic').url() %>">
             <%}%>
             </div>

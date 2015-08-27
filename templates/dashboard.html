@@ -1,0 +1,47 @@
+        <div class="nav show-for-medium-up" id="header">
+            <div class="small-8 medium-4 columns">
+                <header><img src="images/logo_small_alt.png"></header>
+            </div>
+            <div class="small-4 medium-8 columns show-for-medium-up">
+                <ul class="right">
+                    <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
+                    <li><a href="/#/events">Events</a></li>
+                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
+                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Edit Form</a></li>
+                    <li><a href="#" class="log-out">Log out</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row nav-mobile-container hide-for-medium-up">
+            <img src="images/logo_small_alt.png">
+            <nav class="nav nav-collapse">
+                <ul>
+                    <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
+                    <li><a href="/#/events">Events</a></li>
+                    <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
+                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Edit Form</a></li>
+                    <li><a href="#" class="log-out">Log out</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row text-center">
+            <ul class="button-group">
+                <li class="button" id="dropped-button">DROPPED</li>
+                <li class="button" id="active-button">ACTIVE</li>
+                <!--<li class="button secondary">All</li>-->
+            </ul>
+        </div>
+        <!--<div class="row text-center">
+            <ul class="button-group">
+                <li class="button secondary">I Met</li>
+                <li class="button">All</li>
+            </ul>
+        </div>-->
+        <div class="row text-center">
+            <div class="small-12 medium-offset-2 medium-8 columns">
+                <input class="search field" type="text" placeholder="Search">
+                <button class="search disabled">Search</button>
+            </div>
+        </div>
+        <div id="rush-card-subview"></div>
+        <div class="text-center"><a id="loadAll" class="button">Load All</a></div>

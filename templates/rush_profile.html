@@ -1,0 +1,126 @@
+        <div class="nav" id="header">
+            <div class="small-8 columns">
+                <header ><a href="/#/rushes"><img src="images/logo_small_alt.png"></a></header>
+            </div>
+            <div class="small-4 columns">
+                <ul class="right">
+                    <li><a href="/#/rushes">Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+        <div>
+        <div class="row">
+            <div class="medium-2 columns">
+                <a href="/#/rushes">< BACK</a>
+            </div>
+            <div class="medium-8 columns end">
+            <% if(rushee.get('pic_url')){ %>
+                <img src="<%= rushee.get('pic_url') %>">
+            <%} else{%>
+                <img src="<%= rushee.get('pic').url() %>">
+            <%}%>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 medium-offset-2 medium-4 columns">
+                <a href="<%= previous %>" class="button" id="previous"> &lt; Prev</a>
+            </div>
+            <div class="small-6 medium-4 columns end">
+                <a href="<%= next %>" class="button right" id="next"> Next &gt; </a>
+            </div>
+        </div>
+        <div class="profile">
+            <div class="row">
+                <div class="small-12 medium-offset-2 medium-8 columns">
+                    <span class="name-attribute"><%= rushee.get("name") %></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="medium-offset-2 medium-8 columns">
+                    Went to <span class="attribute"><%= rushee.get('highschool') %></span> in <span class="attribute"><%= rushee.get('hometown') %></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="medium-offset-2 medium-8 columns">
+                    <i class="fi-mail contact-method"></i> <%= rushee.get('email') %>
+                </div>
+            </div>
+            <div class="row">
+                <div class="medium-offset-2 medium-8 columns">
+                    <i class="fi-telephone contact-method"></i> <%= rushee.get('phonenumber') %>
+                </div>
+            </div>
+            <!--<div class="row">
+                <div class="medium-offset-2 medium-8 columns">
+                    <i class="fi-home contact-method"></i> <%= rushee.get('residence') %>
+                </div>
+            </div>-->
+            <% for(var index = 0; index < rushee.get('customQuestions').length; index++){ %>
+            <% if(index % 2 == 0) { %>
+            <div class="row">
+                <div class="medium-offset-2 medium-4 columns">
+                    <% } else { %>
+                    <div class="medium-4 end columns">
+                        <% } %>
+                        <div class="question">
+                            <% if(questions.length > 0) { %>
+                            <%= questions[index] %>
+                            <% } %>
+                        </div>
+                        <div>
+                            <%= rushee.get('customQuestions')[index] %>
+                        </div>
+                    </div>
+                    <% if(index % 2 == 1 || index == rushee.get('customQuestions').length-1) { %>
+                </div>
+                <% } %>
+                <% } %>
+                <% if(talked.length != 0) { %>
+                <div class="row">
+                    <div class="medium-offset-2 medium-4 columns">
+                        <div class="question">
+                            Has talked to:
+                        </div>
+                        <% _.each(talked, function(member){ %>
+                        <div>
+                            <%= member.get("name") %>
+                        </div>
+                        <% }); %>
+                    </div>
+                </div>
+                <% } %>
+                <div class="row">
+                    <div class="medium-offset-2 medium-8 columns">
+                        <div class="comments-section">
+                            <% _.each(comments, function(comment){ %>
+                            <div class="comment">
+                                <div>
+                                    <span class="comment-author question"><%= comment.get("authorName") %></span>
+                                    <span class="comment-timestamp"><%= comment.createdAt %></span>
+                                </div>
+                                <div>
+                                    <%= comment.get("comment") %>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-offset-2 medium-8 columns">
+                        <textarea id="comment-textbox" rows="4" placeholder="Comments/Notes"></textarea>
+                        <a class="button right" id="post-comment">Post</a>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <a class="button" id="talked">&nbsp;MET&nbsp;</a>
+                    <a class="button alert" id="drop">DROP</a>
+                </div>
+                <div class="row text-center">
+                    <div class="medium-offset-2 medium-8 columns">
+                        <input type="text" autocorrect="off" autocapitalize="off" id="change-pic-textbox" placeholder="URL for new Picture" />
+                        <a class="button" id="change-pic">Change Pic</a>
+                    </div>
+                </div>
+            </div>
+        </div>

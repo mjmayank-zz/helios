@@ -258,14 +258,9 @@ $(function() {
                 file.save().then(function() {
                     console.log("pic saved");
                     var formdata = document.getElementById("info");
-                    console.log("form0");
-                    console.log("form");
                     form.set("name", formdata.elements["name"].value);
-                    console.log("form2");
                     form.set("email", formdata.elements["email"].value);
-                    console.log("form3");
                     form.set("hometown", formdata.elements["hometown"].value.replace(/,/g, ''));
-                    console.log("form4");
                     form.set("highschool", formdata.elements["highschool"].value.replace(/,/g, ''));
                     form.set("phonenumber", formdata.elements["phonenumber"].value.replace(/\D/g, ''));
                     form.set("residence", formdata.elements["residence"].value.replace(/,/g, ''));
@@ -672,6 +667,72 @@ $(function() {
 
     });
 
+    var ImportCSVView = Parse.View.extend({
+        events: {
+            "change #txtFileUpload" : "uploadCSV"
+        },
+
+        id: "import-csv-view",
+
+        initialize: function() {
+            _.bindAll(this, "render");
+            $(".content").html(this.el);
+            this.render();
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#import-csv-template").html(), this.variables));
+            this.delegateEvents();
+            return this;
+        },
+
+        uploadCSV: function(e) {
+            console.log("uploaded")
+            var data = null;
+            var file = e.target.files[0];
+            var that = this
+            Papa.parse(file, {
+                worker: true,
+                header:true,
+                download: true,
+                step: function(row) {
+                    // console.log(row);
+                    var obj = row["data"][0]
+                    console.log(obj)
+                    var FormClass = Parse.Object.extend("Form");
+                    var form = new FormClass()
+                    form.set("name", obj["name"]);
+                    form.set("email", obj["email"]);
+                    form.set("hometown", obj["hometown"].replace(/,/g, ''));
+                    form.set("highschool", obj["highschool"].replace(/,/g, ''));
+                    form.set("phonenumber", obj["phonenumber"]);
+                    form.set("residence", obj["residence"].replace(/,/g, ''));
+                    form.set("upVote", []);
+                    form.set("downVote", []);
+                    form.set("customQuestions", [])
+                    for (var q in that.variables["formQuestions"]) {
+                        form.add("customQuestions", obj["custom" + q].replace(/,/g, ''));
+                    }
+                    form.addUnique("organizations", Parse.User.current().get("organization"));
+                    form.save( {
+                        success: function(form) {
+                            // Execute any logic that should take place after the object is saved.
+                        },
+                        error: function(form, error) {
+                            // Execute any logic that should take place if the save fails.
+                            // error is a Parse.Error with an error code and message.
+                            alert('Failed to create new object, with error code: ' + error.message);
+                        }
+                    });
+                },
+                complete: function() {
+                    console.log("All done1")
+                }
+            });
+        }
+
+    });
+
     var DashboardView = Parse.View.extend({
         events: {
             "click .log-out": "logOut",
@@ -688,7 +749,7 @@ $(function() {
             $(".content").html(this.el);
             this.variables = {
                                 "status": "active",
-                                "array": []
+                                "array": [],
                             },
             this.variables["orgid"] = Parse.User.current().get("organization").id;
 
@@ -748,7 +809,9 @@ $(function() {
                                     dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
                                 }
                                 dict["residence"] = array[obj].get("residence");
-                                dict["fileurl"] = array[obj].get("pic").url();
+                                if(array[obj].get("pic")){
+                                    dict["fileurl"] = array[obj].get("pic").url();
+                                }
                                 that.variables["array"].push(dict);
                             }
                         }
@@ -1291,6 +1354,8 @@ $(function() {
 
             "settings": "settings",
 
+            "import": "import",
+
             "events": "events",
 			"events/create": "createEvent",
 			"events/:eventid": "eventProfile",
@@ -1394,6 +1459,15 @@ $(function() {
             } else {
                 console.log("profile");
                 this.loadView(new SettingsView());
+            }
+        },
+
+        import: function(){
+            if(!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                console.log("import")
+                this.loadView(new ImportCSVView());
             }
         },
 
