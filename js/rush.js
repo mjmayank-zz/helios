@@ -759,6 +759,7 @@ $(function() {
             "click #loadAll": "loadMore",
             "click #dropped-button": "getDropped",
             "click #active-button": "getActive",
+            "click #search-button": "search"
         },
 
         id: "dashboard-view",
@@ -769,6 +770,7 @@ $(function() {
             this.variables = {
                                 "status": "active",
                                 "array": [],
+                                "activeOffset": 0
                             },
             this.variables["orgid"] = Parse.User.current().get("organization").id;
 
@@ -785,6 +787,31 @@ $(function() {
             this.$el.html(_.template($("#dashboard-template").html(), this.variables));
             this.delegateEvents();
             return this;
+        },
+
+        search: function() {
+            var search = $("#search-textbox")[0].value
+            var form = Parse.Object.extend("Form");
+            var query = new Parse.Query(form)
+
+            console.log(search)
+
+            query.contains("name", search)
+            query.equalTo("organizations", Parse.User.current().get("organization"));
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    console.log(array)
+                    that.subView.updateData(array)
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
         },
 
         getActive: function() {
@@ -832,6 +859,7 @@ $(function() {
                                     dict["fileurl"] = array[obj].get("pic").url();
                                 }
                                 that.variables["array"].push(dict);
+                                that.variables["activeOffset"] = 5
                             }
                         }
                         return array;
@@ -879,7 +907,7 @@ $(function() {
 
         loadMore: function(e) {
             console.log(e.target);
-            this.$('#loadAll').addClass("hide");
+            // this.$('#loadAll').addClass("hide");
             console.log("loadmore");
 
             var form = Parse.Object.extend("Form");
@@ -894,14 +922,15 @@ $(function() {
             // var query = new Parse.Query(form);
             query.equalTo("organizations", Parse.User.current().get("organization"));
             query.descending("createdAt");
-            query.skip(5);
-            query.limit(1000);
+            query.skip(this.variables["activeOffset"]);
+            query.limit(20);
             var that = this;
             query.find({
                 success: function(array) {
                     // The object was retrieved successfully.
                     that.variables["active"] = that.variables["active"].concat(array);
                     that.subView.updateData(that.variables["active"]);
+                    that.variables["activeOffset"] += 20
                 },
                 error: function(object, error) {
                     // The object was not retrieved successfully.
