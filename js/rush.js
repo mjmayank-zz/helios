@@ -745,6 +745,7 @@ $(function() {
                 },
                 complete: function() {
                     console.log("All done1")
+                    router.navigate("/#/rushes")
                 }
             });
         }
