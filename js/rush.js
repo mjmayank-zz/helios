@@ -677,6 +677,15 @@ $(function() {
         initialize: function() {
             _.bindAll(this, "render");
             $(".content").html(this.el);
+            this.variables = {}
+            var orgid = Parse.User.current().get("organization").id
+            var org = Parse.Object.extend("Organization");
+            var query = new Parse.Query(org);
+            var that = this
+            query.get(orgid).then(function(myObj) {
+                that.variables["formQuestions"] = myObj.get("formQuestions")
+                console.log(myObj.get("formQuestions"))
+            });
             this.render();
         },
 
@@ -703,15 +712,24 @@ $(function() {
                     var form = new FormClass()
                     form.set("name", obj["name"]);
                     form.set("email", obj["email"]);
-                    form.set("hometown", obj["hometown"].replace(/,/g, ''));
-                    form.set("highschool", obj["highschool"].replace(/,/g, ''));
                     form.set("phonenumber", obj["phonenumber"]);
-                    form.set("residence", obj["residence"].replace(/,/g, ''));
+                    if(obj["hometown"]){
+                        form.set("hometown", obj["hometown"].replace(/,/g, ''));
+                    }
+                    if(obj["highschool"]){
+                        form.set("highschool", obj["highschool"].replace(/,/g, ''));
+                    }
+                    if(obj["residence"]){
+                        form.set("residence", obj["residence"].replace(/,/g, ''));
+                    }
                     form.set("upVote", []);
                     form.set("downVote", []);
                     form.set("customQuestions", [])
                     for (var q in that.variables["formQuestions"]) {
-                        form.add("customQuestions", obj["custom" + q].replace(/,/g, ''));
+                        console.log("custom" + q)
+                        if(obj["custom" + q]){
+                            form.add("customQuestions", obj["custom" + q].replace(/,/g, ''));
+                        }
                     }
                     form.addUnique("organizations", Parse.User.current().get("organization"));
                     form.save( {
