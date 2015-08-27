@@ -697,7 +697,6 @@ $(function() {
 
         uploadCSV: function(e) {
             console.log("uploaded")
-            var data = null;
             var file = e.target.files[0];
             var that = this
             Papa.parse(file, {
@@ -972,6 +971,98 @@ $(function() {
             this.undelegateEvents();
             delete this;
         }
+    })
+
+    var ExportCSVView = Parse.View.extend({
+        id: "export-view",
+
+        initialize: function() {
+            _.bindAll(this, "render", "query", "downloadCSV");
+            this.variables = {
+                                "array": []
+                            }
+            console.log("initialize rushes");
+            this.query()
+            this.render();
+        },
+
+        render: function() {
+            this.$el.html(_.template($("#export-template").html(), this.variables));
+            this.delegateEvents();
+
+            return this;
+        },
+
+        query: function(){
+            var form = Parse.Object.extend("Form");
+
+            var query = new Parse.Query(form);
+            query.equalTo("organizations", Parse.User.current().get("organization"));
+            query.descending("createdAt");
+            query.limit(1000);
+            var that = this;
+            query.find({
+                success: function(array) {
+                    // The object was retrieved successfully.
+                    for (obj in array) {
+                        // console.log(array[obj].get('talked'));
+                        var status = array[obj].get("status");
+                        if (status == null || status != "inactive") {
+                            var dict = {};
+                            dict["name"] = array[obj].get("name");
+                            dict["email"] = array[obj].get("email");
+                            dict["hometown"] = array[obj].get("hometown");
+                            dict["highschool"] = array[obj].get("highschool");
+                            dict["phonenumber"] = array[obj].get("phonenumber");
+                            if (dict["phonenumber"].length == 10) {
+                                dict["phonenumber"] = ["(", dict["phonenumber"].slice(0, 3), ")", dict["phonenumber"].slice(3, 6), "-", dict["phonenumber"].slice(6)].join('');
+                            }
+                            dict["residence"] = array[obj].get("residence");
+                            dict["status"] = array[obj].get("status")
+                            if(array[obj].get("pic")){
+                                dict["fileurl"] = array[obj].get("pic").url();
+                            }
+                            that.variables["array"].push(dict);
+                        }
+                    }
+                    console.log("dict created")
+                    that.downloadCSV()
+                    return array;
+                },
+                error: function(object, error) {
+                    // The object was not retrieved successfully.
+                    // error is a Parse.Error with an error code and message.
+                    console.log("error");
+                    return [];
+                }
+            });
+        },
+
+        downloadCSV: function() {
+            console.log(this.variables["array"]);
+            var data = [];
+            for (var rushee in this.variables["array"]) {
+                var sing_val = []
+                for (var key in this.variables["array"][rushee]) {
+                    sing_val.push(this.variables["array"][rushee][key]);
+                }
+                console.log(sing_val);
+                data.push(sing_val);
+            }
+
+            console.log(data);
+
+            // var data = [["name1", "city1", "some other info"], ["name2", "city2", "more info"]];
+            var csvContent = "data:text/csv;charset=utf-8,";
+            data.forEach(function(infoArray, index) {
+                dataString = infoArray.join(",");
+                csvContent += dataString + "\n";
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
+            router.navigate("/#/rushes")
+        },
     })
 
     var RushCardListView = Parse.View.extend({
@@ -1403,6 +1494,7 @@ $(function() {
             "settings": "settings",
 
             "import": "import",
+            "export": "export",
 
             "events": "events",
 			"events/create": "createEvent",
@@ -1516,6 +1608,15 @@ $(function() {
             } else {
                 console.log("import")
                 this.loadView(new ImportCSVView());
+            }
+        },
+
+        export: function(){
+            if(!this.checkCurrentUser()) {
+                this.loadView(new LogInView());
+            } else {
+                console.log("export")
+                this.loadView(new ExportCSVView());
             }
         },
 
