@@ -777,7 +777,7 @@ $(function() {
             this.subView = new RushCardListView();
             this.$('#rush-card-subview').html(this.subView.el);
 
-            var nav = responsiveNav(".nav-collapse");
+            responsiveNav(".nav-collapse");
 
             this.getActive();
         },
