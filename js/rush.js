@@ -1116,6 +1116,10 @@ $(function() {
             _.bindAll(this, "drop", "talked")
             this.variables = {};
             this.variables["rushee"] = rush;
+            this.variables["phonenumber"] = rush.get("phonenumber")
+            if (rush.get("phonenumber").length == 10) {
+                this.variables["phonenumber"] = ["(", rush.get("phonenumber").slice(0, 3), ") ", rush.get("phonenumber").slice(3, 6), "-", rush.get("phonenumber").slice(6)].join('');
+            }
             this.variables["upVotes"] = rush.get("upVote") ? rush.get("upVote").length : "0";
             this.variables["downVotes"] = rush.get("upVote") ? rush.get("downVote").length : "0";
             var comment = Parse.Object.extend("Comment");
