@@ -63,7 +63,8 @@
             <form class="signup-form">
               <h2>Sign Up</h2>
               <input type="text" id="signup-frat-name" placeholder="Organization Name" />
-              <input type="text" autocorrect="off" autocapitalize="off" id="signup-name" placeholder="Name" />
+              <input type="text" id="signup-school-name" placeholder="School Name" />
+              <input type="text" autocorrect="off" id="signup-name" placeholder="Name" />
               <input type="email" autocorrect="off" autocapitalize="off" id="signup-email" placeholder="Email Address" />
               <input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Username" />
               <input type="password" id="signup-password" placeholder="Create a Password" />
@@ -336,7 +337,7 @@
               <input type="datetime-local" autocorrect="off" autocapitalize="off" id="create-event-end-date" placeholder="Date" />
               <!--<input type="text" autocorrect="off" autocapitalize="off" id="signup-username" placeholder="Custom Question" />
               <button>Add question</button>-->
-              *The date fields will not work properly on Mozilla Firefox
+              *Mozilla Firefox does not support the dates feature
               <div class="text-center"><button id="submit">Create</button></div>
             </form>
           </div>
@@ -418,10 +419,9 @@
             </div>
             <div class="small-4 medium-8 columns show-for-medium-up">
                 <ul class="right">
-                    <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
                     <li><a href="/#/events">Events</a></li>
                     <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
-                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Edit Form</a></li>
+                    <li><a href="/#/admin">Admin Settings</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
             </div>
@@ -430,10 +430,9 @@
             <img src="images/logo_small_alt.png">
             <nav class="nav nav-collapse">
                 <ul>
-                    <li><a href="/#/signup/<%=orgid%>">Invite</a></li>
                     <li><a href="/#/events">Events</a></li>
                     <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
-                    <li><a id="update-questions" href="/#/update/<%=orgid%>">Edit Form</a></li>
+                    <li><a href="/#/admin">Admin Settings</a></li>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
             </nav>
@@ -532,8 +531,7 @@
         </div>
     </script>
 
-
-    <script type="text/template" id="settings-template">
+    <script type="text/template" id="admin-template">
         <div class="nav" id="header">
             <div class="small-8 columns">
                 <header ><img src="images/logo_small_alt.png"></header>
@@ -544,8 +542,22 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
-          <%= organization.get("name") %>
+        <div class="small-10 small-offset-1 text-center">
+            <div class="row">
+                <a href="/#/update/<%=orgid%>" class="button">Edit Form</a>
+            </div>
+            <div class="row">
+                <a href="/#/signup/<%=orgid%>" class="button">Invite</a>
+            </div>
+            <div class="row">
+                <a href="/#/events/create" class="button">Create Event</a>
+            </div>
+            <div class="row">
+                <a href="/#/import" class="button">Import Data</a>
+            </div>
+            <div class="row">
+                <a href="/#/export" class="button">Export Data</a>
+            </div>
         </div>
     </script>
 
@@ -560,6 +572,28 @@
             </ul>
         </div>
     </div>
+    <div class="small-12 columns row">
+        <ul>
+            <li>
+                The file you’re importing has to be saved as .csv file. You can create this type of file using Excel by using File -> Save As, and changing the file format drop down to Comma Separated Values.
+            </li>
+            <li>
+                The first row of the file should be the column names, and the column names have to be “name”, “email”, “hometown”, “highschool”, “phonenumber”. These are all case and space sensitive (ie they should all be lower case and have no spaces)
+            </li>
+            <li>
+                If you don’t have one of those columns that’s fine.
+            </li>
+            <li>
+                Any other columns have to be matched up with custom questions (which can be accessed from the Edit Form link on the dashboard) to be able to display on the site. 
+            </li>
+            <li>
+                The column should be called “custom0", “custom1", etc. in the same order as those questions (i.e. how they appear on the form).
+            </li>
+            <li>
+                Any other columns names WON'T get imported.
+            </li>
+        </ul>
+    </div>
     <div id="dvImportSegments" class="fileupload ">
     <fieldset>
         <legend>Upload your CSV File</legend>
@@ -567,7 +601,6 @@
    </fieldset>
 </div>
 </script>
-
 
     <script type="text/template" id="rush-profile-template">
         <div class="nav" id="header">

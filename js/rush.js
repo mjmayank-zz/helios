@@ -6,6 +6,9 @@ $(function() {
     Parse.initialize("KyueCTE3edcgkBYXNWK8xUELxvLXdrOR4hoCcbLB",
         "GauBt1jLTOfVaCdzoD3yCe8ZI1AaC3Wec9ekyx7l");
 
+    // Parse.User.logOut();
+    console.log(Parse.User.current().get("organization").id)
+
     // The Application
     // ---------------
     Parse.View.prototype.closeView = function(){
@@ -399,6 +402,7 @@ $(function() {
             console.log("form submitted");
             var self = this;
             var org = this.$("#signup-frat-name").val();
+            var university = this.$("#signup-school-name").val();
             var name = this.$("#signup-name").val();
             var email = this.$("#signup-email").val();
             var username = this.$("#signup-username").val().toLowerCase();
@@ -406,7 +410,9 @@ $(function() {
 
             var user = new Parse.User()
             user.set("name", name);
+            user.set("university", university);
             user.set("email", email);
+            user.set("role", "admin");
             user.set("username", username);
             user.set("password", password);
             user.signUp(null, {
@@ -1455,7 +1461,7 @@ $(function() {
         }
     })
 
-    var SettingsView = Parse.View.extend({
+    var AdminView = Parse.View.extend({
         events: {
 
         },
@@ -1469,12 +1475,13 @@ $(function() {
             this.variables["orgid"] = Parse.User.current().get("organization").fetch(
                 function(myObj){
                     that.variables["organization"] = myObj;
+                    that.variables["orgid"] = myObj.id
                     that.render();
             });
         },
 
         render: function(){
-            this.$el.html(_.template($("#settings-template").html(), this.variables));
+            this.$el.html(_.template($("#admin-template").html(), this.variables));
             this.delegateEvents();
             return this;
         },
@@ -1494,8 +1501,9 @@ $(function() {
             "rushes/:rushid": "profile",
 
             "login": "rushes",
+            "logout": "logout",
 
-            "settings": "settings",
+            "admin": "admin",
 
             "import": "import",
             "export": "export",
@@ -1514,6 +1522,10 @@ $(function() {
 
         homepage: function(){
             $(".content").html(_.template($("#homepage-template").html()));
+        },
+
+        logout: function(){
+            Parse.User.logOut()
         },
 
         form: function() {
@@ -1597,12 +1609,12 @@ $(function() {
             }
         },
 
-        settings: function(){
+        admin: function(){
             if (!this.checkCurrentUser()) {
                 this.loadView(new LogInView());
             } else {
                 console.log("profile");
-                this.loadView(new SettingsView());
+                this.loadView(new AdminView());
             }
         },
 
