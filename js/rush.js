@@ -8,7 +8,9 @@ $(function() {
 
     // Parse.User.logOut();
     // console.log(Parse.User.current().get("organization").id)
-    Parse.User.current().fetch()
+    // if(Parse.User.current()){
+    //     Parse.User.current().fetch()
+    // }
 
     // The Application
     // ---------------
