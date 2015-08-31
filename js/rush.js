@@ -7,7 +7,8 @@ $(function() {
         "GauBt1jLTOfVaCdzoD3yCe8ZI1AaC3Wec9ekyx7l");
 
     // Parse.User.logOut();
-    console.log(Parse.User.current().get("organization").id)
+    // console.log(Parse.User.current().get("organization").id)
+    Parse.User.current().fetch()
 
     // The Application
     // ---------------

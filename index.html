@@ -421,7 +421,7 @@
                 <ul class="right">
                     <li><a href="/#/events">Events</a></li>
                     <li><a id="back-to-form" href="/#/form/<%=orgid%>">Rush Form</a></li>
-                    <li><a href="/#/admin">Admin Settings</a></li>
+                    <% if(Parse.User.current().get("role") === "admin") { %><li><a href="/#/admin">Admin Settings</a></li><%}%>
                     <li><a href="#" class="log-out">Log out</a></li>
                 </ul>
             </div>
@@ -572,7 +572,8 @@
             </ul>
         </div>
     </div>
-    <div class="small-12 columns row">
+    <div class="small-12 columns">
+        <h1>Import Data</h1>
         <ul>
             <li>
                 The file you’re importing has to be saved as .csv file. You can create this type of file using Excel by using File -> Save As, and changing the file format drop down to Comma Separated Values.
@@ -594,12 +595,14 @@
             </li>
         </ul>
     </div>
-    <div id="dvImportSegments" class="fileupload ">
-    <fieldset>
-        <legend>Upload your CSV File</legend>
-            <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
-   </fieldset>
-</div>
+    <div class="small-12 columns">
+        <div id="dvImportSegments" class="fileupload ">
+            <fieldset>
+                <legend>Upload your CSV File</legend>
+                    <input type="file" name="File Upload" id="txtFileUpload" accept=".csv" />
+            </fieldset>
+        </div>
+    </div>
 </script>
 
     <script type="text/template" id="rush-profile-template">
@@ -719,7 +722,7 @@
                 </div>
                 <div class="row text-center">
                     <a class="button" id="talked">&nbsp;MET&nbsp;</a>
-                    <a class="button alert" id="drop">DROP</a>
+                    <% if(Parse.User.current().get("role") === "admin") { %><a class="button alert" id="drop">DROP</a><%}%>
                 </div>
                 <div class="row text-center">
                     <div class="medium-offset-2 medium-8 columns">
